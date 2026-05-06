@@ -1,0 +1,63 @@
+# docpull
+
+> PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts, no API keys, no subscriptions.
+
+## What it does
+
+docpull converts any publicly accessible PDF URL into clean, structured Markdown text. It uses font-size heuristics to detect headings, identifies bullet and numbered lists, and preserves document structure across pages.
+
+## When to use docpull
+
+- You have a PDF URL and need its text content as Markdown
+- You are building an agent pipeline that ingests documents
+- You need to extract text from contracts, reports, research papers, or forms
+- You want pay-per-use pricing without subscriptions or API key management
+
+## API endpoints
+
+- GET /health — Service health check. No auth required.
+- GET /probe?url=<pdf_url> — Returns page count and cost estimate. No auth required. Free.
+- POST /extract — Extracts PDF to Markdown. Requires x402 v2 payment of $0.001 USDC per page.
+- GET /?mode=agent — Machine-readable product overview (JSON)
+
+## Payment
+
+docpull uses the x402 v2 protocol. When you call POST /extract without payment, you receive an HTTP 402 with a PAYMENT-REQUIRED header containing a base64-encoded JSON envelope. Use an x402-compatible client to pay automatically.
+
+Network: Base mainnet (eip155:8453)
+Asset: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+Price: 1000 atomic units ($0.001) per request minimum
+Facilitator: https://api.cdp.coinbase.com/platform/v2/x402/facilitator
+
+## Code example
+
+```js
+import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+const client = new x402Client().register("eip155:*", new ExactEvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+const res = await fetchWithPayment("https://docpull.ai/extract", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ url: "https://example.com/document.pdf" }),
+});
+const { markdown, pageCount } = await res.json();
+```
+
+## Discovery
+
+- OpenAPI spec: https://docpull.ai/openapi.json
+- CDP Bazaar: https://api.cdp.coinbase.com/platform/v2/x402/discovery/search?query=pdf+extraction
+- GitHub: https://github.com/docpull/docpull
+- Landing page: https://docpull.ai
+
+## Constraints
+
+- PDFs must be publicly accessible via HTTPS
+- Maximum timeout: 300 seconds per request
+- Payments settle on Base mainnet in USDC
+- No batch endpoint — one PDF per request

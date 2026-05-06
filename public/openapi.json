@@ -1,0 +1,183 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "docpull",
+    "description": "PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts, no API keys, no subscriptions.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "jesse@docpull.ai",
+      "url": "https://docpull.ai"
+    },
+    "x-payment": {
+      "protocol": "x402",
+      "version": 2,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "pricePerPage": "0.001 USDC"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://docpull.ai",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Service health check",
+        "description": "Returns service status. No authentication required.",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "service": { "type": "string", "example": "docpull" },
+                    "version": { "type": "string", "example": "1.0.0" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/probe": {
+      "get": {
+        "operationId": "probePdf",
+        "summary": "Get page count and cost estimate",
+        "description": "Returns the number of pages in a PDF and the exact cost to extract it. Free — no payment required.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "Publicly accessible URL of the PDF",
+            "schema": { "type": "string", "format": "uri" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page count and cost estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pageCount": { "type": "integer", "example": 12 },
+                    "costUSDC": { "type": "string", "example": "0.012000" },
+                    "pricePerPage": { "type": "string", "example": "0.001 USDC" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid URL or PDF cannot be fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/extract": {
+      "post": {
+        "operationId": "extractPdf",
+        "summary": "Extract PDF to Markdown",
+        "description": "Downloads a PDF from the provided URL and returns clean structured Markdown. Requires x402 v2 payment of $0.001 USDC per page on Base mainnet. Call /probe first to get the exact cost.",
+        "x-payment": {
+          "protocol": "x402",
+          "version": 2,
+          "network": "eip155:8453",
+          "amount": "1000",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Publicly accessible URL of the PDF to extract",
+                    "example": "https://example.com/document.pdf"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extraction successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "pageCount": { "type": "integer", "example": 12 },
+                    "charCount": { "type": "integer", "example": 18432 },
+                    "markdown": { "type": "string", "example": "# Title\n\n## Section 1\n\nBody text..." }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. Response includes PAYMENT-REQUIRED header with x402 v2 envelope.",
+            "headers": {
+              "PAYMENT-REQUIRED": {
+                "description": "Base64-encoded x402 v2 payment requirements JSON",
+                "schema": { "type": "string" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "docpull",
+  "version": "1.0.0",
+  "description": "PDF to Markdown extraction API for AI agents",
+  "url": "https://docpull.ai",
+  "skills": [
+    {
+      "id": "extract-pdf",
+      "name": "Extract PDF to Markdown",
+      "description": "Converts a publicly accessible PDF URL to clean structured Markdown. Detects headings, lists, and document structure.",
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"],
+      "examples": [
+        "Extract the text from https://example.com/report.pdf",
+        "Convert this PDF to markdown: https://example.com/contract.pdf"
+      ]
+    },
+    {
+      "id": "probe-pdf",
+      "name": "Probe PDF cost",
+      "description": "Check the page count and extraction cost for a PDF before paying.",
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    }
+  ],
+  "payment": {
+    "protocol": "x402",
+    "version": 2,
+    "network": "eip155:8453"
+  }
+}

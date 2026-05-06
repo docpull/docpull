@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "docpull",
+  "name_for_model": "docpull",
+  "description_for_human": "Convert any PDF URL to clean Markdown. Pay $0.001 USDC per page via x402.",
+  "description_for_model": "docpull converts publicly accessible PDF URLs to clean structured Markdown. Use the /probe endpoint to check page count and cost before calling /extract. Payment is made automatically via x402 v2 in USDC on Base mainnet. No API keys or accounts required.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://docpull.ai/openapi.json"
+  },
+  "logo_url": "https://docpull.ai/favicon.ico",
+  "contact_email": "jesse@docpull.ai",
+  "legal_info_url": "https://docpull.ai"
+}

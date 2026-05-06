@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: ByteSpider
+Disallow: /
+
+Sitemap: https://docpull.ai/sitemap.xml
+
+# AI crawler policy
+Content-Signal: search=yes, ai-input=yes, ai-train=no

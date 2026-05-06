@@ -1,0 +1,24 @@
+{
+  "name": "docpull",
+  "version": "1.0.0",
+  "description": "PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts or API keys needed.",
+  "url": "https://docpull.ai",
+  "api": {
+    "type": "openapi",
+    "url": "https://docpull.ai/openapi.json"
+  },
+  "payment": {
+    "protocol": "x402",
+    "version": 2,
+    "network": "eip155:8453",
+    "asset": "USDC",
+    "pricePerPage": "0.001"
+  },
+  "capabilities": ["pdf-extraction", "markdown-conversion", "document-parsing"],
+  "endpoints": {
+    "health": "GET /health",
+    "probe": "GET /probe?url=<pdf_url>",
+    "extract": "POST /extract"
+  },
+  "contact": "jesse@docpull.ai"
+}
