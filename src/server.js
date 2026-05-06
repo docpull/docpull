@@ -17,10 +17,6 @@ if (!WALLET_ADDRESS) {
   process.exit(1);
 }
 
-// @coinbase/x402 facilitator reads CDP_API_KEY_ID and CDP_API_KEY_SECRET
-// automatically from environment variables for verify/settle operations.
-// This also enables CDP Bazaar indexing on first successful payment.
-
 // ── Health check (free) ────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "docpull", version: "1.0.0" });
@@ -30,7 +26,6 @@ app.get("/health", (_req, res) => {
 app.get("/probe", async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url query param required" });
-
   try {
     const pageCount = await getPageCount(url);
     const costUSDC = (pageCount * 0.001).toFixed(6);
@@ -40,48 +35,61 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── Extract endpoint with x402 payment ────────────────────────────────────
+// ── x402 middleware applied globally to /extract (both GET and POST) ───────
+// Must run BEFORE any request validation so empty/probe requests get 402
+const extractPaymentMiddleware = paymentMiddleware(
+  WALLET_ADDRESS,
+  {
+    "GET /extract": {
+      price: "$0.001",
+      network: NETWORK,
+      config: {
+        description: "PDF to Markdown extraction. POST {url} to extract any PDF. $0.001 per page.",
+        mimeType: "application/json",
+      },
+    },
+    "POST /extract": {
+      price: "$0.001",
+      network: NETWORK,
+      config: {
+        description: "PDF to Markdown extraction. POST {url} to extract any PDF. $0.001 per page.",
+        mimeType: "application/json",
+      },
+    },
+  },
+  facilitator
+);
+
+app.use("/extract", extractPaymentMiddleware);
+
+// ── GET /extract — info endpoint (requires payment, enables Bazaar probing) 
+app.get("/extract", (_req, res) => {
+  res.json({
+    info: "POST to /extract with {url} in the body to extract a PDF to markdown.",
+    pricing: "$0.001 USDC per page",
+    probe: "GET /probe?url=<pdf_url> for free page count and cost estimate",
+  });
+});
+
+// ── POST /extract — actual extraction ─────────────────────────────────────
 app.post("/extract", async (req, res, next) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "url body field required" });
 
-  let pageCount;
   try {
-    pageCount = await getPageCount(url);
+    const [markdown, pageCount] = await Promise.all([
+      extractPdfToMarkdown(url),
+      getPageCount(url),
+    ]);
+    res.json({
+      success: true,
+      pageCount,
+      markdown,
+      charCount: markdown.length,
+    });
   } catch (err) {
-    return res.status(400).json({ error: `Cannot fetch PDF: ${err.message}` });
+    next(err);
   }
-
-  const price = `$${(pageCount * 0.001).toFixed(6)}`;
-
-  const middleware = paymentMiddleware(
-    WALLET_ADDRESS,
-    {
-      [`POST /extract`]: {
-        price,
-        network: NETWORK,
-        config: {
-          description: `PDF to Markdown extraction — ${pageCount} pages`,
-          mimeType: "application/json",
-        },
-      },
-    },
-    facilitator
-  );
-
-  middleware(req, res, async () => {
-    try {
-      const markdown = await extractPdfToMarkdown(url);
-      res.json({
-        success: true,
-        pageCount,
-        markdown,
-        charCount: markdown.length,
-      });
-    } catch (err) {
-      next(err);
-    }
-  });
 });
 
 // ── Error handler ──────────────────────────────────────────────────────────
