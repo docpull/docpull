@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — docpull</title>
+  <meta name="description" content="Technical guides on PDF extraction, AI agent pipelines, and x402 micropayments from the docpull team.">
+  <link rel="canonical" href="https://docpull.ai/blog">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Blog","name":"docpull Blog","url":"https://docpull.ai/blog","description":"Technical guides on PDF extraction, AI agent pipelines, and x402 micropayments"}
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0d0d0d; --paper: #f7f5f0; --cream: #edeae3;
+      --rule: #d8d4cb; --green: #2d6a4f;
+      --mono: 'DM Mono', monospace;
+      --serif: 'Instrument Serif', serif;
+      --sans: 'Geist', sans-serif;
+    }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.6; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2.5rem; border-bottom: 1px solid var(--rule); }
+    .nav-logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; color: #777; text-decoration: none; }
+    .nav-back:hover { color: var(--ink); }
+    main { max-width: 760px; margin: 0 auto; padding: 5rem 2rem; }
+    .blog-eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 1.5rem; }
+    h1 { font-family: var(--serif); font-size: 3rem; line-height: 1.1; margin-bottom: 1rem; }
+    .blog-desc { font-size: 1.05rem; color: #666; max-width: 520px; margin-bottom: 4rem; }
+    hr { border: none; border-top: 1px solid var(--rule); margin: 0 0 3rem; }
+    .post-list { display: grid; gap: 0; }
+    .post-item { padding: 2rem 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start; }
+    .post-item:first-child { border-top: 1px solid var(--rule); }
+    .post-meta { font-family: var(--mono); font-size: 0.7rem; color: #aaa; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+    .post-title { font-family: var(--serif); font-size: 1.5rem; line-height: 1.2; margin-bottom: 0.5rem; }
+    .post-title a { color: var(--ink); text-decoration: none; }
+    .post-title a:hover { color: var(--green); }
+    .post-excerpt { font-size: 0.9rem; color: #666; line-height: 1.6; max-width: 560px; }
+    .post-tag { font-family: var(--mono); font-size: 0.65rem; padding: 0.25rem 0.6rem; background: var(--cream); border-radius: 3px; color: #888; white-space: nowrap; margin-top: 0.25rem; }
+    footer { text-align: center; padding: 3rem; font-family: var(--mono); font-size: 0.75rem; color: #bbb; border-top: 1px solid var(--rule); }
+    footer a { color: #888; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">docpull</a>
+    <a href="/" class="nav-back">← Back to docpull</a>
+  </nav>
+  <main>
+    <p class="blog-eyebrow">Blog</p>
+    <h1>Technical guides<br><em>for agent builders.</em></h1>
+    <p class="blog-desc">Practical writing on PDF extraction, AI agent pipelines, and building with x402 micropayments.</p>
+    <hr>
+    <div class="post-list">
+      <div class="post-item">
+        <div>
+          <p class="post-meta">May 2026 · 8 min read</p>
+          <h2 class="post-title"><a href="/blog/pdf-extraction-ai-agent-pipelines">How to Extract PDFs in AI Agent Pipelines Using x402</a></h2>
+          <p class="post-excerpt">A practical guide to building autonomous document ingestion into your agent stack — no API keys, no subscriptions, just pay-per-page USDC via x402 v2.</p>
+        </div>
+        <span class="post-tag">Tutorial</span>
+      </div>
+      <div class="post-item">
+        <div>
+          <p class="post-meta">May 2026 · 6 min read</p>
+          <h2 class="post-title"><a href="/blog/pdf-to-markdown-rag-pipelines">PDF to Markdown: Why Structured Output Matters for RAG Pipelines</a></h2>
+          <p class="post-excerpt">Why Markdown — not raw text or JSON — is the optimal format for feeding PDF content into retrieval-augmented generation systems.</p>
+        </div>
+        <span class="post-tag">Deep Dive</span>
+      </div>
+      <div class="post-item">
+        <div>
+          <p class="post-meta">May 2026 · 7 min read</p>
+          <h2 class="post-title"><a href="/blog/building-agent-native-apis-x402">Building Agent-Native APIs with x402 Micropayments</a></h2>
+          <p class="post-excerpt">How x402 v2 removes every friction point between AI agents and paid APIs — and what it means for the future of agent-to-agent commerce.</p>
+        </div>
+        <span class="post-tag">Architecture</span>
+      </div>
+    </div>
+  </main>
+  <footer><a href="/">docpull.ai</a> · PDF to Markdown API for AI agents</footer>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building Agent-Native APIs with x402 Micropayments — docpull</title>
+  <meta name="description" content="How x402 v2 removes every friction point between AI agents and paid APIs — and what it means for the future of agent-to-agent commerce.">
+  <link rel="canonical" href="https://docpull.ai/blog/building-agent-native-apis-x402">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building Agent-Native APIs with x402 Micropayments",
+    "description": "How x402 v2 removes every friction point between AI agents and paid APIs — and what it means for the future of agent-to-agent commerce.",
+    "url": "https://docpull.ai/blog/building-agent-native-apis-x402",
+    "datePublished": "2026-05-06",
+    "author": { "@type": "Organization", "name": "docpull", "url": "https://docpull.ai" },
+    "publisher": { "@type": "Organization", "name": "docpull", "url": "https://docpull.ai" }
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0d0d0d; --paper: #f7f5f0; --cream: #edeae3;
+      --rule: #d8d4cb; --green: #2d6a4f; --green-light: #e8f5ee;
+      --mono: 'DM Mono', monospace; --serif: 'Instrument Serif', serif; --sans: 'Geist', sans-serif;
+    }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2.5rem; border-bottom: 1px solid var(--rule); }
+    .nav-logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; color: #777; text-decoration: none; }
+    .nav-back:hover { color: var(--ink); }
+    article { max-width: 680px; margin: 0 auto; padding: 5rem 2rem 8rem; }
+    .post-tag { font-family: var(--mono); font-size: 0.65rem; padding: 0.25rem 0.6rem; background: var(--cream); border-radius: 3px; color: #888; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin-bottom: 1rem; }
+    .post-meta { font-family: var(--mono); font-size: 0.75rem; color: #aaa; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--rule); }
+    h2 { font-family: var(--serif); font-size: 1.6rem; margin: 2.5rem 0 0.75rem; }
+    h3 { font-family: var(--sans); font-size: 1rem; font-weight: 500; margin: 2rem 0 0.5rem; color: #333; }
+    p { margin-bottom: 1.25rem; font-size: 1.0rem; }
+    ul, ol { margin: 0 0 1.25rem 1.5rem; }
+    li { margin-bottom: 0.4rem; font-size: 1.0rem; }
+    pre { background: #0d0d0d; border-radius: 6px; padding: 1.5rem; overflow-x: auto; margin: 1.5rem 0; }
+    code { font-family: var(--mono); font-size: 0.8rem; line-height: 1.7; color: #e8e8e8; }
+    p code, li code { background: var(--cream); color: var(--ink); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+    .callout { background: var(--green-light); border-left: 3px solid var(--green); padding: 1rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1.5rem 0; font-size: 0.95rem; }
+    .flow { background: var(--cream); border-radius: 6px; padding: 1.5rem; margin: 1.5rem 0; font-family: var(--mono); font-size: 0.8rem; line-height: 2; }
+    .flow-step { display: flex; align-items: center; gap: 0.75rem; }
+    .flow-num { background: var(--ink); color: var(--paper); width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; }
+    .flow-arrow { color: #aaa; margin-left: 2.25rem; font-size: 0.8rem; }
+    .post-nav { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 0.85rem; }
+    .post-nav a { color: var(--green); text-decoration: none; font-family: var(--mono); }
+    footer { text-align: center; padding: 3rem; font-family: var(--mono); font-size: 0.75rem; color: #bbb; border-top: 1px solid var(--rule); }
+    footer a { color: #888; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">docpull</a>
+    <a href="/blog" class="nav-back">← Blog</a>
+  </nav>
+  <article>
+    <span class="post-tag">Architecture</span>
+    <h1>Building Agent-Native APIs with x402 Micropayments</h1>
+    <p class="post-meta">May 2026 · 7 min read · docpull</p>
+
+    <p>Most APIs today are built for human developers. The signup flow, API key management, and subscription billing all assume a person is on the other end — someone who can click through an onboarding flow, enter a credit card number, and rotate credentials when needed.</p>
+
+    <p>AI agents can do none of this. And as agents become primary consumers of API services, the friction built into traditional API design becomes a fundamental architectural problem.</p>
+
+    <p>x402 v2 is the most elegant solution to this problem I've encountered. This post explains the pattern and how to implement it.</p>
+
+    <h2>What makes an API "agent-native"</h2>
+
+    <p>An agent-native API has four properties:</p>
+
+    <ul>
+      <li><strong>Zero setup</strong> — no account creation, no API keys, no human onboarding</li>
+      <li><strong>Machine-discoverable</strong> — the API surface is described in a format agents can parse and act on autonomously</li>
+      <li><strong>Pay-per-use</strong> — billing is per-call, not subscription-based, so agents don't accumulate idle costs</li>
+      <li><strong>Programmatic auth</strong> — authentication happens via a protocol an agent can execute, not a browser flow</li>
+    </ul>
+
+    <p>Traditional APIs satisfy none of these. x402 v2 satisfies all four.</p>
+
+    <h2>How x402 v2 works</h2>
+
+    <p>x402 uses HTTP 402 ("Payment Required") as a machine-readable payment request. The server includes a <code>PAYMENT-REQUIRED</code> header with a base64-encoded JSON envelope describing exactly what payment is needed:</p>
+
+    <pre><code>{
+  <span style="color:#f9a03f">"x402Version"</span>: <span style="color:#b5cea8">2</span>,
+  <span style="color:#f9a03f">"error"</span>: <span style="color:#ce9178">"Payment required"</span>,
+  <span style="color:#f9a03f">"resource"</span>: { <span style="color:#f9a03f">"url"</span>: <span style="color:#ce9178">"https://docpull.ai/extract"</span> },
+  <span style="color:#f9a03f">"accepts"</span>: [{
+    <span style="color:#f9a03f">"scheme"</span>: <span style="color:#ce9178">"exact"</span>,
+    <span style="color:#f9a03f">"network"</span>: <span style="color:#ce9178">"eip155:8453"</span>,
+    <span style="color:#f9a03f">"amount"</span>: <span style="color:#ce9178">"1000"</span>,
+    <span style="color:#f9a03f">"asset"</span>: <span style="color:#ce9178">"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"</span>,
+    <span style="color:#f9a03f">"payTo"</span>: <span style="color:#ce9178">"0x..."</span>,
+    <span style="color:#f9a03f">"maxTimeoutSeconds"</span>: <span style="color:#b5cea8">300</span>
+  }]
+}</code></pre>
+
+    <p>An x402-compatible client receives this, settles the payment on-chain via the CDP facilitator, and retries the request with proof of payment in the <code>X-PAYMENT</code> header. The server verifies and fulfills.</p>
+
+    <p>The full flow:</p>
+
+    <div class="flow">
+      <div class="flow-step"><span class="flow-num">1</span> Agent calls API endpoint</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">2</span> Server returns 402 + PAYMENT-REQUIRED header</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">3</span> x402 client decodes payment requirements</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">4</span> Client signs USDC transfer on Base mainnet</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">5</span> CDP facilitator verifies + settles payment</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">6</span> Client retries with X-PAYMENT header</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><span class="flow-num">7</span> Server verifies + fulfills request</div>
+    </div>
+
+    <p>No human touches this flow. An agent with a funded wallet can execute it autonomously in under a second.</p>
+
+    <h2>Building an x402 server with Express</h2>
+
+    <p>Here's the minimal pattern for adding x402 to an Express API using the official packages:</p>
+
+    <pre><code><span style="color:#7ec8e3">import</span> express <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"express"</span>;
+<span style="color:#7ec8e3">import</span> { paymentMiddleware, x402ResourceServer } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/express"</span>;
+<span style="color:#7ec8e3">import</span> { HTTPFacilitatorClient } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/core/server"</span>;
+<span style="color:#7ec8e3">import</span> { ExactEvmScheme } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/evm/exact/server"</span>;
+<span style="color:#7ec8e3">import</span> { facilitator } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@coinbase/x402"</span>;
+
+<span style="color:#7ec8e3">const</span> app = express();
+app.use(express.json());
+
+<span style="color:#555">// Set up CDP facilitator (reads CDP_API_KEY_ID / CDP_API_KEY_SECRET from env)</span>
+<span style="color:#7ec8e3">const</span> facilitatorClient = <span style="color:#7ec8e3">new</span> HTTPFacilitatorClient(facilitator);
+<span style="color:#7ec8e3">const</span> server = <span style="color:#7ec8e3">new</span> x402ResourceServer(facilitatorClient)
+  .register(<span style="color:#ce9178">"eip155:*"</span>, <span style="color:#7ec8e3">new</span> ExactEvmScheme());
+
+<span style="color:#555">// Apply payment middleware before route handlers</span>
+app.use(paymentMiddleware({
+  <span style="color:#ce9178">"POST /api/your-endpoint"</span>: {
+    accepts: [{
+      scheme: <span style="color:#ce9178">"exact"</span>,
+      price: <span style="color:#ce9178">"$0.001"</span>,
+      network: <span style="color:#ce9178">"eip155:8453"</span>,
+      payTo: process.env.WALLET_ADDRESS,
+      asset: <span style="color:#ce9178">"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"</span>, <span style="color:#555">// USDC on Base</span>
+      maxTimeoutSeconds: <span style="color:#b5cea8">300</span>,
+    }],
+  },
+}, server));
+
+<span style="color:#555">// Your actual route handler</span>
+app.post(<span style="color:#ce9178">"/api/your-endpoint"</span>, (req, res) => {
+  <span style="color:#555">// Payment verified — fulfil the request</span>
+  res.json({ result: <span style="color:#ce9178">"success"</span> });
+});</code></pre>
+
+    <p>That's the complete server-side implementation. The middleware intercepts requests, issues 402 responses to unpaid callers, and verifies payment proofs from paid callers before passing to your handler.</p>
+
+    <h2>Making your API discoverable</h2>
+
+    <p>Agent-native APIs need to be discoverable by agents. x402 v2 includes a Bazaar extension that registers your API with the CDP discovery index when the first payment is processed:</p>
+
+    <pre><code><span style="color:#7ec8e3">import</span> {
+  bazaarResourceServerExtension,
+  declareDiscoveryExtension,
+} <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/extensions/bazaar"</span>;
+
+server.registerExtension(bazaarResourceServerExtension);
+
+<span style="color:#555">// Add to your route config</span>
+<span style="color:#7ec8e3">const</span> routeConfig = {
+  <span style="color:#ce9178">"POST /api/your-endpoint"</span>: {
+    accepts: [<span style="color:#555">/* ... */</span>],
+    extensions: {
+      ...declareDiscoveryExtension({
+        bodyType: <span style="color:#ce9178">"json"</span>,
+        output: {
+          example: { result: <span style="color:#ce9178">"success"</span> },
+          schema: { properties: { result: { type: <span style="color:#ce9178">"string"</span> } } }
+        }
+      })
+    }
+  }
+};</code></pre>
+
+    <p>After the first payment, your API appears in the CDP Bazaar. Agents querying for services in your category will discover it autonomously.</p>
+
+    <h2>The bigger picture</h2>
+
+    <p>x402 enables something that wasn't possible before: an open marketplace of API services where agents are first-class consumers. An agent can:</p>
+
+    <ol>
+      <li>Identify a task it needs to complete (e.g., "extract this PDF")</li>
+      <li>Query the CDP Bazaar for services that match the capability</li>
+      <li>Evaluate options by price and description</li>
+      <li>Pay and call the selected service</li>
+      <li>Incorporate the result into its reasoning</li>
+    </ol>
+
+    <p>No human sets up accounts. No API keys are provisioned. No billing dashboards are monitored. The entire pipeline runs autonomously.</p>
+
+    <div class="callout">
+      The long-term implication of x402 is that APIs become agent infrastructure in the same way S3 became developer infrastructure. Anyone can publish a service, set a price, and collect micropayments from agents — without building a SaaS business around it.
+    </div>
+
+    <h2>Key design principles for agent-native APIs</h2>
+
+    <ul>
+      <li><strong>Free probe endpoints</strong> — let agents check cost before committing. docpull's <code>/probe</code> endpoint lets agents check page count and price for free</li>
+      <li><strong>Structured errors</strong> — return JSON error objects with codes. Agents can't parse HTML error pages</li>
+      <li><strong>Rate limit headers</strong> — return <code>X-RateLimit-*</code> headers so agents can self-throttle</li>
+      <li><strong>OpenAPI spec</strong> — publish a machine-readable spec at <code>/openapi.json</code> so agents understand your surface</li>
+      <li><strong>llms.txt</strong> — publish a plain-text description at <code>/llms.txt</code> so agents can understand your product without crawling HTML</li>
+    </ul>
+
+    <p>docpull implements all of these. The complete source is open at <a href="https://github.com/docpull/docpull" style="color:var(--green)">github.com/docpull/docpull</a>.</p>
+
+    <div class="post-nav">
+      <a href="/blog/pdf-to-markdown-rag-pipelines">← PDF to Markdown for RAG</a>
+      <a href="/blog">All posts →</a>
+    </div>
+  </article>
+  <footer><a href="/">docpull.ai</a> · PDF to Markdown API for AI agents</footer>
+</body>
+</html>

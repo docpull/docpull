@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Extract PDFs in AI Agent Pipelines Using x402 — docpull</title>
+  <meta name="description" content="A practical guide to building autonomous PDF extraction into your AI agent stack using x402 v2 micropayments. No API keys, no subscriptions, pay per page.">
+  <link rel="canonical" href="https://docpull.ai/blog/pdf-extraction-ai-agent-pipelines">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to Extract PDFs in AI Agent Pipelines Using x402",
+    "description": "A practical guide to building autonomous PDF extraction into your AI agent stack using x402 v2 micropayments.",
+    "url": "https://docpull.ai/blog/pdf-extraction-ai-agent-pipelines",
+    "datePublished": "2026-05-06",
+    "author": { "@type": "Organization", "name": "docpull", "url": "https://docpull.ai" },
+    "publisher": { "@type": "Organization", "name": "docpull", "url": "https://docpull.ai" }
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0d0d0d; --paper: #f7f5f0; --cream: #edeae3;
+      --rule: #d8d4cb; --green: #2d6a4f; --green-light: #e8f5ee;
+      --mono: 'DM Mono', monospace; --serif: 'Instrument Serif', serif; --sans: 'Geist', sans-serif;
+    }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2.5rem; border-bottom: 1px solid var(--rule); }
+    .nav-logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; color: #777; text-decoration: none; }
+    .nav-back:hover { color: var(--ink); }
+    article { max-width: 680px; margin: 0 auto; padding: 5rem 2rem 8rem; }
+    .post-tag { font-family: var(--mono); font-size: 0.65rem; padding: 0.25rem 0.6rem; background: var(--green-light); border-radius: 3px; color: var(--green); display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin-bottom: 1rem; }
+    .post-meta { font-family: var(--mono); font-size: 0.75rem; color: #aaa; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--rule); }
+    h2 { font-family: var(--serif); font-size: 1.6rem; margin: 2.5rem 0 0.75rem; }
+    h3 { font-family: var(--sans); font-size: 1rem; font-weight: 500; margin: 2rem 0 0.5rem; color: #333; }
+    p { margin-bottom: 1.25rem; font-size: 1.0rem; }
+    ul, ol { margin: 0 0 1.25rem 1.5rem; }
+    li { margin-bottom: 0.4rem; font-size: 1.0rem; }
+    pre { background: #0d0d0d; border-radius: 6px; padding: 1.5rem; overflow-x: auto; margin: 1.5rem 0; }
+    code { font-family: var(--mono); font-size: 0.8rem; line-height: 1.7; color: #e8e8e8; }
+    p code, li code { background: var(--cream); color: var(--ink); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+    .callout { background: var(--green-light); border-left: 3px solid var(--green); padding: 1rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1.5rem 0; font-size: 0.95rem; }
+    .post-nav { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 0.85rem; }
+    .post-nav a { color: var(--green); text-decoration: none; font-family: var(--mono); }
+    footer { text-align: center; padding: 3rem; font-family: var(--mono); font-size: 0.75rem; color: #bbb; border-top: 1px solid var(--rule); }
+    footer a { color: #888; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">docpull</a>
+    <a href="/blog" class="nav-back">← Blog</a>
+  </nav>
+  <article>
+    <span class="post-tag">Tutorial</span>
+    <h1>How to Extract PDFs in AI Agent Pipelines Using x402</h1>
+    <p class="post-meta">May 2026 · 8 min read · docpull</p>
+
+    <p>AI agents that can autonomously ingest, understand, and act on PDF documents unlock an enormous surface area of real-world use cases: contract review, research synthesis, financial report analysis, and more. But building PDF extraction into an agent pipeline has historically required human setup — API key registration, billing configuration, and credential management that breaks the autonomous loop.</p>
+
+    <p>x402 v2 changes this. Combined with a purpose-built extraction API like docpull, an agent can discover, pay for, and use PDF extraction without any human intervention.</p>
+
+    <p>This guide walks through the complete pattern, from discovery to extraction.</p>
+
+    <h2>The problem with traditional PDF APIs</h2>
+
+    <p>Most PDF extraction services — whether cloud APIs or self-hosted libraries — share a common assumption: a human developer is setting them up. This creates three friction points for autonomous agents:</p>
+
+    <ul>
+      <li><strong>Account creation</strong> — requires email verification, billing info, and often a manual approval step</li>
+      <li><strong>API key management</strong> — keys must be provisioned, stored, and rotated by a human</li>
+      <li><strong>Subscription billing</strong> — monthly charges that require a credit card on file</li>
+    </ul>
+
+    <p>An AI agent can do none of these things. If your agent hits a paywalled PDF API without pre-configured credentials, the pipeline fails and waits for human intervention.</p>
+
+    <h2>The x402 solution</h2>
+
+    <p>The x402 v2 protocol uses the HTTP 402 status code to request payment inline. Instead of "you need an account," the server says "send $0.001 USDC to this address on Base mainnet and retry." An x402-compatible client handles payment settlement automatically, with no human in the loop.</p>
+
+    <p>The flow looks like this:</p>
+
+    <ol>
+      <li>Agent calls <code>POST /extract</code> with a PDF URL</li>
+      <li>Server returns <code>402 Payment Required</code> with a <code>PAYMENT-REQUIRED</code> header (base64 JSON with payment instructions)</li>
+      <li>x402 client decodes the requirements, signs a USDC transfer on Base mainnet via CDP facilitator</li>
+      <li>Client retries the request with an <code>X-PAYMENT</code> header</li>
+      <li>Server verifies payment and returns the extracted Markdown</li>
+    </ol>
+
+    <p>The entire sequence takes under a second and costs $0.001 per page.</p>
+
+    <h2>Setting up the x402 client</h2>
+
+    <p>First, install the required packages:</p>
+
+    <pre><code>npm install @x402/fetch @x402/evm viem</code></pre>
+
+    <p>Your agent needs a wallet with USDC on Base mainnet. For testing, use Base Sepolia with test USDC from <a href="https://faucet.circle.com" style="color:var(--green)">faucet.circle.com</a>.</p>
+
+    <pre><code><span style="color:#7ec8e3">import</span> { x402Client, wrapFetchWithPayment } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/fetch"</span>;
+<span style="color:#7ec8e3">import</span> { ExactEvmScheme } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/evm/exact/client"</span>;
+<span style="color:#7ec8e3">import</span> { privateKeyToAccount } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"viem/accounts"</span>;
+
+<span style="color:#7ec8e3">const</span> signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+<span style="color:#7ec8e3">const</span> client = <span style="color:#7ec8e3">new</span> x402Client()
+  .register(<span style="color:#ce9178">"eip155:*"</span>, <span style="color:#7ec8e3">new</span> ExactEvmScheme(signer));
+
+<span style="color:#7ec8e3">const</span> fetchWithPayment = wrapFetchWithPayment(fetch, client);</code></pre>
+
+    <h2>The probe-then-extract pattern</h2>
+
+    <p>Before paying, agents should probe the PDF to check its page count and exact cost. docpull exposes a free <code>/probe</code> endpoint for this:</p>
+
+    <pre><code><span style="color:#555">// Step 1: Check cost before paying</span>
+<span style="color:#7ec8e3">const</span> probeRes = <span style="color:#7ec8e3">await</span> fetch(
+  <span style="color:#ce9178">`https://docpull.ai/probe?url=${encodeURIComponent(pdfUrl)}`</span>
+);
+<span style="color:#7ec8e3">const</span> { pageCount, costUSDC } = <span style="color:#7ec8e3">await</span> probeRes.json();
+<span style="color:#555">// { pageCount: 12, costUSDC: "0.012000", pricePerPage: "0.001 USDC" }</span>
+
+<span style="color:#555">// Step 2: Decide whether to proceed</span>
+<span style="color:#7ec8e3">if</span> (parseFloat(costUSDC) > maxBudget) {
+  <span style="color:#7ec8e3">return</span> { error: <span style="color:#ce9178">"Document too expensive"</span>, costUSDC };
+}
+
+<span style="color:#555">// Step 3: Extract with automatic payment</span>
+<span style="color:#7ec8e3">const</span> res = <span style="color:#7ec8e3">await</span> fetchWithPayment(<span style="color:#ce9178">"https://docpull.ai/extract"</span>, {
+  method: <span style="color:#ce9178">"POST"</span>,
+  headers: { <span style="color:#ce9178">"Content-Type"</span>: <span style="color:#ce9178">"application/json"</span> },
+  body: JSON.stringify({ url: pdfUrl }),
+});
+
+<span style="color:#7ec8e3">const</span> { markdown, pageCount: pages } = <span style="color:#7ec8e3">await</span> res.json();</code></pre>
+
+    <div class="callout">
+      The probe step is important for budget management. Without it, agents can unknowingly extract 200-page documents and incur $0.20 charges per call. Always probe first.
+    </div>
+
+    <h2>Integrating with agent frameworks</h2>
+
+    <h3>LangChain / LangGraph</h3>
+    <p>Wrap the extraction logic as a tool:</p>
+
+    <pre><code><span style="color:#7ec8e3">import</span> { tool } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@langchain/core/tools"</span>;
+<span style="color:#7ec8e3">import</span> { z } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"zod"</span>;
+
+<span style="color:#7ec8e3">const</span> extractPdfTool = tool(
+  <span style="color:#7ec8e3">async</span> ({ url, maxCostUSDC = <span style="color:#b5cea8">0.10</span> }) => {
+    <span style="color:#7ec8e3">const</span> probe = <span style="color:#7ec8e3">await</span> fetch(
+      <span style="color:#ce9178">`https://docpull.ai/probe?url=${encodeURIComponent(url)}`</span>
+    ).then(r => r.json());
+
+    <span style="color:#7ec8e3">if</span> (parseFloat(probe.costUSDC) > maxCostUSDC) {
+      <span style="color:#7ec8e3">return</span> <span style="color:#ce9178">`Document too large: ${probe.pageCount} pages, costs ${probe.costUSDC} USDC`</span>;
+    }
+
+    <span style="color:#7ec8e3">const</span> res = <span style="color:#7ec8e3">await</span> fetchWithPayment(<span style="color:#ce9178">"https://docpull.ai/extract"</span>, {
+      method: <span style="color:#ce9178">"POST"</span>,
+      headers: { <span style="color:#ce9178">"Content-Type"</span>: <span style="color:#ce9178">"application/json"</span> },
+      body: JSON.stringify({ url }),
+    });
+
+    <span style="color:#7ec8e3">const</span> { markdown } = <span style="color:#7ec8e3">await</span> res.json();
+    <span style="color:#7ec8e3">return</span> markdown;
+  },
+  {
+    name: <span style="color:#ce9178">"extract_pdf"</span>,
+    description: <span style="color:#ce9178">"Extract text from a PDF URL as Markdown. Costs $0.001 USDC per page."</span>,
+    schema: z.object({
+      url: z.string().url().describe(<span style="color:#ce9178">"Public URL of the PDF"</span>),
+      maxCostUSDC: z.number().optional().describe(<span style="color:#ce9178">"Max spend in USDC"</span>),
+    }),
+  }
+);</code></pre>
+
+    <h3>Via MCP</h3>
+    <p>docpull also exposes an MCP server at <code>https://docpull.ai/mcp</code>. Add it to your Claude, ChatGPT, or any MCP-compatible client:</p>
+
+    <pre><code>{
+  <span style="color:#f9a03f">"type"</span>: <span style="color:#ce9178">"streamable-http"</span>,
+  <span style="color:#f9a03f">"url"</span>: <span style="color:#ce9178">"https://docpull.ai/mcp"</span>
+}</code></pre>
+
+    <p>The MCP server exposes <code>probe_pdf</code>, <code>extract_pdf</code>, and <code>health_check</code> tools that agents can call natively.</p>
+
+    <h2>Production considerations</h2>
+
+    <ul>
+      <li><strong>Wallet funding</strong> — keep a buffer of USDC on Base. $1 = 1000 pages, so $10 handles most workloads</li>
+      <li><strong>Error handling</strong> — handle <code>402</code> responses explicitly. If payment fails, the retry will also fail</li>
+      <li><strong>PDF accessibility</strong> — docpull fetches PDFs directly. Ensure URLs are publicly accessible and not behind auth</li>
+      <li><strong>Timeout</strong> — large PDFs can take up to 30 seconds. Set appropriate timeouts in your agent</li>
+    </ul>
+
+    <h2>Discovery via CDP Bazaar</h2>
+
+    <p>docpull is indexed in the CDP Bazaar — the discovery layer for x402-enabled APIs. Agents that query the Bazaar for "PDF extraction" will find docpull autonomously and can integrate it without any manual configuration:</p>
+
+    <pre><code><span style="color:#555"># Search the Bazaar</span>
+curl "https://api.cdp.coinbase.com/platform/v2/x402/discovery/search?query=pdf+extraction"</code></pre>
+
+    <p>This means your agent infrastructure can self-configure — given a task that requires PDF extraction, an agent can discover, evaluate, and integrate docpull on its own.</p>
+
+    <div class="callout">
+      docpull is live at <a href="https://docpull.ai" style="color:var(--green)">docpull.ai</a>. The <code>/probe</code> endpoint is always free. Start there.
+    </div>
+
+    <div class="post-nav">
+      <a href="/blog">← All posts</a>
+      <a href="/blog/pdf-to-markdown-rag-pipelines">Next: PDF to Markdown for RAG →</a>
+    </div>
+  </article>
+  <footer><a href="/">docpull.ai</a> · PDF to Markdown API for AI agents</footer>
+</body>
+</html>

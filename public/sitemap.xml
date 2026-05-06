@@ -12,4 +12,8 @@
   <url><loc>https://docpull.ai/docs/llms.txt</loc><lastmod>2026-05-06</lastmod><priority>0.5</priority></url>
   <url><loc>https://docpull.ai/compare</loc><lastmod>2026-05-06</lastmod><priority>0.6</priority></url>
   <url><loc>https://docpull.ai/contact</loc><lastmod>2026-05-06</lastmod><priority>0.6</priority></url>
+  <url><loc>https://docpull.ai/blog</loc><lastmod>2026-05-06</lastmod><priority>0.8</priority></url>
+  <url><loc>https://docpull.ai/blog/pdf-extraction-ai-agent-pipelines</loc><lastmod>2026-05-06</lastmod><priority>0.7</priority></url>
+  <url><loc>https://docpull.ai/blog/pdf-to-markdown-rag-pipelines</loc><lastmod>2026-05-06</lastmod><priority>0.7</priority></url>
+  <url><loc>https://docpull.ai/blog/building-agent-native-apis-x402</loc><lastmod>2026-05-06</lastmod><priority>0.7</priority></url>
 </urlset>
