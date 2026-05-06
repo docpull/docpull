@@ -41,7 +41,7 @@ const accepts = [{
 }];
 
 const bazaarExtension = declareDiscoveryExtension({
-  input: { url: "https://example.com/document.pdf" },
+  input: { url: "https://pdfobject.com/pdf/sample.pdf" },
   inputSchema: {
     properties: {
       url: {
