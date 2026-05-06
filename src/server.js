@@ -8,7 +8,7 @@ import {
   declareDiscoveryExtension,
 } from "@x402/extensions/bazaar";
 import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
-import { mcpServer, createMcpTransport } from "./mcp.js";
+import { createMcpServer, createMcpTransport } from "./mcp.js";
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -267,8 +267,9 @@ app.use(
 // ── MCP endpoint (Streamable HTTP) ────────────────────────────────────────
 app.all("/mcp", async (req, res) => {
   try {
+    const server = createMcpServer();
     const transport = createMcpTransport();
-    await mcpServer.connect(transport);
+    await server.connect(transport);
     await transport.handleRequest(req, res, req.body);
   } catch (err) {
     console.error("MCP error:", err);
