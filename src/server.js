@@ -5,6 +5,7 @@ import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
 const app = express();
 app.use(express.json());
+app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
