@@ -16,7 +16,7 @@ app.use(express.static("public"));
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
 const NETWORK = "eip155:8453";
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const BASE_URL = process.env.BASE_URL || `https://localhost:${PORT}`;
 const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 if (!WALLET_ADDRESS) {
@@ -24,7 +24,7 @@ if (!WALLET_ADDRESS) {
   process.exit(1);
 }
 
-// ── x402 v2 resource server with CDP facilitator + Bazaar extension ─────────
+// ── x402 v2 + CDP facilitator + Bazaar extension ───────────────────────────
 const facilitatorClient = new HTTPFacilitatorClient(facilitator);
 const server = new x402ResourceServer(facilitatorClient)
   .register("eip155:*", new ExactEvmScheme());
@@ -40,17 +40,8 @@ const accepts = [{
   maxTimeoutSeconds: 300,
 }];
 
+// Empty body {} so Bazaar probe passes without a real PDF URL
 const bazaarExtension = declareDiscoveryExtension({
-  input: { url: "https://pdfobject.com/pdf/sample.pdf" },
-  inputSchema: {
-    properties: {
-      url: {
-        type: "string",
-        description: "Publicly accessible URL of the PDF to extract",
-      },
-    },
-    required: ["url"],
-  },
   bodyType: "json",
   output: {
     example: {
@@ -80,12 +71,14 @@ app.use(
         description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
         mimeType: "application/json",
         extensions: { ...bazaarExtension },
+        resource: `${BASE_URL}/extract`,
       },
       "POST /extract": {
         accepts,
         description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
         mimeType: "application/json",
         extensions: { ...bazaarExtension },
+        resource: `${BASE_URL}/extract`,
       },
     },
     server
