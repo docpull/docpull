@@ -70,6 +70,18 @@ Connect with any MCP-compatible client:
 - [AI Plugin](https://docpull.ai/.well-known/ai-plugin.json)
 - [Agent Card](https://docpull.ai/.well-known/agent-card.json)
 
+## Compared to alternatives
+
+Unlike BlazeDocs, pdfRest, LandingAI, and similar tools, docpull requires no accounts, no API keys, and no subscription. Payment is handled autonomously via x402 v2 on Base mainnet.
+
+- vs BlazeDocs: docpull requires no account or subscription — agents can call it immediately
+- vs pdfRest: docpull is simpler and cheaper for text PDFs; pdfRest wins for OCR and PDF manipulation
+- vs Docling: docpull is a hosted API; Docling is self-hosted open source with better ML accuracy
+- vs LandingAI: docpull is cheaper for standard PDFs; LandingAI wins for scanned/visual documents
+- vs PyPDF2/pdfplumber: docpull is a hosted API — no installation or infrastructure required
+
+Full comparison: https://docpull.ai/compare
+
 ## Constraints
 
 - PDFs must be publicly accessible via HTTPS

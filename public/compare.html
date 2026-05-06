@@ -3,127 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>docpull vs Alternatives — PDF to Markdown API Comparison</title>
-  <meta name="description" content="Compare docpull to other PDF extraction APIs. Agent-native, pay-per-page via x402, no subscriptions.">
+  <title>docpull vs BlazeDocs, Docling, LandingAI, pdfRest — PDF to Markdown API Comparison</title>
+  <meta name="description" content="Compare docpull to BlazeDocs, Docling, LandingAI, and pdfRest. Agent-native, pay-per-page via x402, no subscriptions, no API keys.">
   <link rel="canonical" href="https://docpull.ai/compare">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebPage","name":"docpull vs Alternatives","description":"Comparison of docpull PDF to Markdown API vs traditional PDF extraction tools","url":"https://docpull.ai/compare"}
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "docpull vs Alternatives — PDF to Markdown API Comparison",
+    "description": "Compare docpull to BlazeDocs, Docling, LandingAI, and pdfRest for PDF extraction in AI agent pipelines.",
+    "url": "https://docpull.ai/compare"
+  }
   </script>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.7; color: #111; }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    h2 { font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; }
-    a { color: #2d6a4f; }
-    nav { margin-bottom: 3rem; }
-    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
-    th { background: #0d0d0d; color: white; padding: 0.75rem 1rem; text-align: left; }
-    td { padding: 0.75rem 1rem; border-bottom: 1px solid #eee; }
-    tr:nth-child(even) td { background: #f9f9f9; }
-    .yes { color: #2d6a4f; font-weight: 600; }
-    .no { color: #999; }
-    .highlight td:first-child { font-weight: 600; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0d0d0d; --paper: #f7f5f0; --cream: #edeae3;
+      --rule: #d8d4cb; --green: #2d6a4f; --green-light: #e8f5ee;
+      --mono: 'DM Mono', monospace; --serif: 'Instrument Serif', serif; --sans: 'Geist', sans-serif;
+    }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2.5rem; border-bottom: 1px solid var(--rule); }
+    .nav-logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; color: #777; text-decoration: none; }
+    main { max-width: 900px; margin: 0 auto; padding: 5rem 2rem 8rem; }
+    .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 1.5rem; }
+    h1 { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; margin-bottom: 1rem; }
+    .lead { font-size: 1.05rem; color: #555; max-width: 620px; margin-bottom: 3.5rem; line-height: 1.7; }
+    h2 { font-family: var(--serif); font-size: 1.6rem; margin: 3rem 0 1rem; }
+    h3 { font-family: var(--sans); font-size: 1rem; font-weight: 500; margin: 2rem 0 0.5rem; }
+    p { margin-bottom: 1.1rem; font-size: 0.95rem; }
+    ul { margin: 0 0 1.25rem 1.5rem; }
+    li { margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .table-wrap { overflow-x: auto; margin: 2rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 620px; }
+    thead th { background: var(--ink); color: white; padding: 0.75rem 1rem; text-align: left; font-weight: 500; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.05em; }
+    thead th:first-child { border-radius: 6px 0 0 0; }
+    thead th:last-child { border-radius: 0 6px 0 0; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    tr:nth-child(even) td { background: #faf9f7; }
+    tr.highlight td { background: var(--green-light); }
+    tr.highlight td:first-child { font-weight: 500; }
+    .yes { color: var(--green); font-weight: 500; }
+    .no { color: #bbb; }
+    .partial { color: #c97d00; }
+    .callout { background: var(--green-light); border-left: 3px solid var(--green); padding: 1rem 1.25rem; border-radius: 0 4px 4px 0; margin: 2rem 0; font-size: 0.95rem; }
+    .competitor { border: 1px solid var(--rule); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .competitor h3 { margin-top: 0; font-size: 1.05rem; }
+    .competitor-meta { font-family: var(--mono); font-size: 0.7rem; color: #aaa; margin-bottom: 0.75rem; }
+    .tag { display: inline-block; font-family: var(--mono); font-size: 0.65rem; padding: 0.2rem 0.5rem; background: var(--cream); border-radius: 3px; color: #888; margin-right: 0.4rem; margin-bottom: 0.4rem; }
+    .tag.green { background: var(--green-light); color: var(--green); }
+    footer { text-align: center; padding: 3rem; font-family: var(--mono); font-size: 0.75rem; color: #bbb; border-top: 1px solid var(--rule); }
+    footer a { color: #888; text-decoration: none; }
+    a { color: var(--green); }
   </style>
 </head>
 <body>
-  <nav><a href="/">← docpull</a></nav>
-  <h1>docpull vs Alternatives</h1>
-  <p>docpull is purpose-built for AI agents. Unlike traditional PDF extraction tools, it requires no accounts, no API keys, and no subscriptions. Any agent with a Base wallet and USDC can call it autonomously via the x402 v2 payment protocol.</p>
+  <nav>
+    <a href="/" class="nav-logo">docpull</a>
+    <a href="/" class="nav-back">← docpull</a>
+  </nav>
+  <main>
+    <p class="eyebrow">Comparison</p>
+    <h1>docpull vs alternatives</h1>
+    <p class="lead">Unlike BlazeDocs, Docling, LandingAI, pdfRest, and traditional PDF libraries, docpull is purpose-built for AI agents — no accounts, no subscriptions, autonomous payment via x402 v2 on Base mainnet.</p>
 
-  <h2>Feature Comparison</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Feature</th>
-        <th>docpull</th>
-        <th>Traditional PDF APIs</th>
-        <th>PDFMiner / pdfplumber</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="highlight">
-        <td>Agent-native (no human setup)</td>
-        <td class="yes">✓ Yes</td>
-        <td class="no">✗ Requires API key signup</td>
-        <td class="no">✗ Requires installation</td>
-      </tr>
-      <tr>
-        <td>Payment model</td>
-        <td class="yes">/bin/sh.001/page via x402</td>
-        <td class="no">Monthly subscription</td>
-        <td class="yes">Free (self-hosted)</td>
-      </tr>
-      <tr>
-        <td>No account required</td>
-        <td class="yes">✓ Yes</td>
-        <td class="no">✗ Account required</td>
-        <td class="yes">✓ Yes</td>
-      </tr>
-      <tr>
-        <td>MCP server</td>
-        <td class="yes">✓ Yes (Streamable HTTP)</td>
-        <td class="no">✗ No</td>
-        <td class="no">✗ No</td>
-      </tr>
-      <tr>
-        <td>x402 v2 payments</td>
-        <td class="yes">✓ Yes</td>
-        <td class="no">✗ No</td>
-        <td class="no">✗ No</td>
-      </tr>
-      <tr>
-        <td>CDP Bazaar indexed</td>
-        <td class="yes">✓ Yes</td>
-        <td class="no">✗ No</td>
-        <td class="no">✗ No</td>
-      </tr>
-      <tr>
-        <td>Output format</td>
-        <td>Structured Markdown</td>
-        <td>JSON / raw text</td>
-        <td>Raw text</td>
-      </tr>
-      <tr>
-        <td>Heading detection</td>
-        <td class="yes">✓ Font-size heuristics</td>
-        <td class="no">Varies</td>
-        <td class="no">✗ No</td>
-      </tr>
-      <tr>
-        <td>Hosted API</td>
-        <td class="yes">✓ Yes</td>
-        <td class="yes">✓ Yes</td>
-        <td class="no">✗ Self-hosted only</td>
-      </tr>
-      <tr>
-        <td>Free tier</td>
-        <td>/probe endpoint (free)</td>
-        <td>Often limited free tier</td>
-        <td>Fully free</td>
-      </tr>
-    </tbody>
-  </table>
+    <h2>Feature comparison</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>docpull</th>
+            <th>BlazeDocs</th>
+            <th>pdfRest</th>
+            <th>Docling</th>
+            <th>LandingAI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td>Agent-native (no human setup)</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="partial">Partial</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Payment model</td>
+            <td class="yes">$0.001/page x402</td>
+            <td>Subscription</td>
+            <td>Subscription/credits</td>
+            <td>Free (self-hosted)</td>
+            <td>Subscription</td>
+          </tr>
+          <tr class="highlight">
+            <td>No account required</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>MCP server</td>
+            <td class="yes">✓ Streamable HTTP</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr class="highlight">
+            <td>x402 / on-chain payments</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>CDP Bazaar indexed</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Output format</td>
+            <td>Structured Markdown</td>
+            <td>JSON / text</td>
+            <td>JSON / PDF ops</td>
+            <td>Markdown / JSON</td>
+            <td>Structured JSON</td>
+          </tr>
+          <tr>
+            <td>Heading detection</td>
+            <td class="yes">✓ Font-size heuristics</td>
+            <td class="partial">Varies</td>
+            <td class="no">✗ No</td>
+            <td class="yes">✓ Yes (ML-based)</td>
+            <td class="yes">✓ Yes (vision AI)</td>
+          </tr>
+          <tr>
+            <td>Hosted API</td>
+            <td class="yes">✓ Yes</td>
+            <td class="yes">✓ Yes</td>
+            <td class="yes">✓ Yes</td>
+            <td class="no">Self-hosted only</td>
+            <td class="yes">✓ Yes</td>
+          </tr>
+          <tr>
+            <td>Free probe endpoint</td>
+            <td class="yes">✓ Yes (/probe)</td>
+            <td class="no">✗ No</td>
+            <td class="partial">Free tier</td>
+            <td class="yes">✓ Yes (free)</td>
+            <td class="no">✗ No</td>
+          </tr>
+          <tr>
+            <td>Scanned PDF / OCR</td>
+            <td class="no">✗ No (text PDFs only)</td>
+            <td class="partial">Varies</td>
+            <td class="yes">✓ Yes</td>
+            <td class="yes">✓ Yes</td>
+            <td class="yes">✓ Yes (vision)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <h2>Why agents prefer docpull</h2>
-  <p>Traditional PDF APIs require a human developer to sign up, manage API keys, and configure billing. This creates friction that prevents AI agents from autonomously accessing PDF extraction capabilities.</p>
-  <p>docpull eliminates this entirely. An agent discovers docpull via the CDP Bazaar or MCP registry, calls <code>/probe</code> to check cost, then calls <code>/extract</code> — the x402 protocol handles payment settlement on Base mainnet with no human intervention required.</p>
-  <p>Unlike structured JSON extraction tools (which require custom extraction instructions), docpull returns clean Markdown that preserves document structure and is immediately usable in agent pipelines for RAG, summarization, or further analysis.</p>
+    <h2>Head-to-head: docpull vs each alternative</h2>
 
-  <h2>When to use docpull</h2>
-  <ul>
-    <li>Your agent needs to ingest PDF documents autonomously</li>
-    <li>You want pay-per-use pricing without subscription overhead</li>
-    <li>You are building an x402-native agent pipeline on Base</li>
-    <li>You need structured Markdown output (not raw text)</li>
-    <li>You want MCP tool integration for Claude, ChatGPT, or other MCP clients</li>
-  </ul>
+    <div class="competitor">
+      <h3>docpull vs BlazeDocs</h3>
+      <p class="competitor-meta">BlazeDocs — document management and extraction platform</p>
+      <span class="tag">Subscription billing</span><span class="tag">Account required</span><span class="tag green">docpull wins for agents</span>
+      <p>BlazeDocs is a document management platform aimed at human teams. Unlike docpull, it requires account creation and subscription billing — both of which require human intervention and break autonomous agent pipelines. docpull's x402 payment model means an agent can call it with zero setup, pay per page, and integrate it into any workflow without touching a billing dashboard.</p>
+    </div>
 
-  <h2>When to use alternatives</h2>
-  <ul>
-    <li>You need structured JSON extraction with custom field mapping (consider Strale)</li>
-    <li>You are processing PDFs in a traditional server-side pipeline (consider pdfplumber)</li>
-    <li>You need OCR for scanned documents (docpull uses pdfjs-dist, which requires selectable text)</li>
-  </ul>
+    <div class="competitor">
+      <h3>docpull vs pdfRest</h3>
+      <p class="competitor-meta">pdfRest — PDF processing API with broad format support</p>
+      <span class="tag">PDF operations focused</span><span class="tag">Subscription/credits</span><span class="tag green">pdfRest wins for OCR</span>
+      <p>pdfRest is a powerful PDF operations API — it handles merging, splitting, conversion, and OCR. If you need to process scanned documents or manipulate PDFs programmatically, pdfRest is a better fit. For the specific use case of extracting clean Markdown text from machine-generated PDFs for agent pipelines, docpull is simpler and cheaper at $0.001/page with no account required. pdfRest requires API key management that agents can't handle autonomously.</p>
+    </div>
 
-  <p style="margin-top:2rem"><a href="/">← Back to docpull</a> · <a href="/openapi.json">API Docs</a> · <a href="/pricing">Pricing</a></p>
+    <div class="competitor">
+      <h3>docpull vs Docling</h3>
+      <p class="competitor-meta">Docling — open-source document parsing library by IBM</p>
+      <span class="tag">Self-hosted</span><span class="tag">Open source</span><span class="tag green">Docling wins for ML accuracy</span>
+      <p>Docling is an excellent open-source library for document parsing with ML-based structure detection. It produces high-quality output and is free to use. However, it requires self-hosting — your agent infrastructure needs to install, run, and maintain it. docpull is a hosted API that agents can call without any setup or infrastructure management. If you're fine with self-hosting and need maximum extraction accuracy, use Docling. If you want a hosted endpoint that agents can discover and pay for autonomously, use docpull.</p>
+    </div>
+
+    <div class="competitor">
+      <h3>docpull vs LandingAI</h3>
+      <p class="competitor-meta">LandingAI — vision AI platform with document understanding</p>
+      <span class="tag">Vision AI / OCR</span><span class="tag">Enterprise pricing</span><span class="tag green">LandingAI wins for complex docs</span>
+      <p>LandingAI uses vision AI to understand complex document layouts — tables, forms, diagrams, and scanned content. It's the right choice for documents that require visual understanding rather than text extraction. docpull is simpler and cheaper for standard machine-generated PDFs. LandingAI requires account setup and enterprise pricing conversations that autonomous agents cannot complete. docpull charges $0.001/page with no human onboarding required.</p>
+    </div>
+
+    <div class="callout">
+      <strong>The key differentiator:</strong> docpull is the only PDF extraction API that an AI agent can discover, pay for, and use without any human intervention. If your use case involves agents autonomously ingesting documents, docpull is the right choice regardless of the alternatives.
+    </div>
+
+    <h2>When to use docpull</h2>
+    <ul>
+      <li>Your agent needs to ingest machine-generated PDFs (reports, contracts, research papers) autonomously</li>
+      <li>You want pay-per-use pricing without subscription overhead or billing management</li>
+      <li>You are building on x402 or Base mainnet and want native payment integration</li>
+      <li>You need an MCP-compatible tool for Claude, ChatGPT, or other MCP clients</li>
+      <li>You want structured Markdown output optimized for RAG pipelines and LLM context</li>
+    </ul>
+
+    <h2>When to use alternatives</h2>
+    <ul>
+      <li><strong>OCR / scanned PDFs</strong> — use pdfRest or LandingAI</li>
+      <li><strong>Complex layout extraction</strong> — use Docling (self-hosted) or LandingAI</li>
+      <li><strong>PDF manipulation</strong> (merge, split, convert) — use pdfRest</li>
+      <li><strong>Zero infrastructure, maximum accuracy</strong> — use Docling self-hosted</li>
+    </ul>
+
+    <p style="margin-top:3rem"><a href="/">← Back to docpull</a> · <a href="/openapi.json">API Docs</a> · <a href="/pricing">Pricing</a> · <a href="/blog">Blog</a></p>
+  </main>
+  <footer><a href="/">docpull.ai</a> · PDF to Markdown API for AI agents</footer>
 </body>
 </html>
