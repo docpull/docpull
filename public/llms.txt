@@ -53,6 +53,8 @@ const { markdown, pageCount } = await res.json();
 docpull exposes a Model Context Protocol (MCP) server via Streamable HTTP transport.
 
 - MCP endpoint: https://docpull.ai/mcp
+- MCP discovery: https://docpull.ai/.well-known/mcp
+- MCP server card: https://docpull.ai/.well-known/mcp/server-card.json
 - Transport: Streamable HTTP (stateless)
 - Tools: probe_pdf, extract_pdf, health_check
 
