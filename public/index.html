@@ -18,25 +18,66 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "docpull",
-    "url": "https://docpull.ai",
-    "description": "PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts, no API keys, no subscriptions.",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Any",
-    "offers": {
-      "@type": "Offer",
-      "price": "0.001",
-      "priceCurrency": "USDC",
-      "description": "Per page pricing via x402"
-    },
-    "sameAs": ["https://github.com/docpull/docpull"],
-    "provider": {
-      "@type": "Organization",
-      "name": "docpull",
-      "url": "https://docpull.ai",
-      "email": "jesse@docpull.ai"
-    }
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://docpull.ai/#app",
+        "name": "docpull",
+        "url": "https://docpull.ai",
+        "description": "PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts, no API keys, no subscriptions.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0.001",
+          "priceCurrency": "USDC",
+          "description": "Per page pricing via x402 on Base mainnet"
+        },
+        "sameAs": ["https://github.com/docpull/docpull"],
+        "featureList": ["PDF extraction", "Markdown output", "x402 payments", "Agent-native API"]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://docpull.ai/#org",
+        "name": "docpull",
+        "url": "https://docpull.ai",
+        "email": "jesse@docpull.ai",
+        "sameAs": ["https://github.com/docpull/docpull"],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "jesse@docpull.ai",
+          "contactType": "technical support"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://docpull.ai/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How much does docpull cost?",
+            "acceptedAnswer": { "@type": "Answer", "text": "$0.001 USDC per page, paid via x402 on Base mainnet. No subscriptions or API keys needed." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need an API key to use docpull?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No API keys or accounts required. Any agent with a Base wallet and USDC can call it immediately." }
+          },
+          {
+            "@type": "Question",
+            "name": "What payment method does docpull use?",
+            "acceptedAnswer": { "@type": "Answer", "text": "docpull uses the x402 v2 protocol with USDC on Base mainnet. Payments are made automatically by x402-compatible clients." }
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://docpull.ai/#website",
+        "name": "docpull",
+        "url": "https://docpull.ai",
+        "description": "PDF to Markdown API for AI agents"
+      }
+    ]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -592,8 +633,9 @@
     <a href="/" class="nav-logo">docpull</a>
     <ul class="nav-links">
       <li><a href="#how">How it works</a></li>
-      <li><a href="#api">API</a></li>
+      <li><a href="/openapi.json">API Docs</a></li>
       <li><a href="#pricing">Pricing</a></li>
+      <li><a href="/llms.txt">llms.txt</a></li>
     </ul>
     <a href="#api" class="nav-cta">View docs →</a>
   </nav>
@@ -823,6 +865,9 @@
     <span class="footer-logo">docpull</span>
     <ul class="footer-links">
       <li><a href="https://github.com/docpull/docpull" target="_blank">GitHub</a></li>
+      <li><a href="/openapi.json">API Docs</a></li>
+      <li><a href="/docs/llms.txt">Docs</a></li>
+      <li><a href="/pricing">Pricing</a></li>
       <li><a href="https://x402.org" target="_blank">x402</a></li>
       <li><a href="mailto:jesse@docpull.ai">Contact</a></li>
     </ul>

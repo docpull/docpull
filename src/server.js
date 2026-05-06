@@ -193,6 +193,11 @@ app.get("/schema.json", (_req, res) => {
 // ── Static files ───────────────────────────────────────────────────────────
 app.use(express.static(publicDir));
 
+// ── /docs redirect + well-known openapi ───────────────────────────────────
+app.get("/docs", (_req, res) => res.sendFile("docs/llms.txt", { root: publicDir }));
+app.get("/.well-known/openapi.json", (_req, res) => res.sendFile("openapi.json", { root: publicDir }));
+app.get("/developers", (_req, res) => res.sendFile("docs/llms.txt", { root: publicDir }));
+
 // ── Trust anchor pages (without .html extension) ──────────────────────────
 app.get("/about", (_req, res) => res.sendFile("about.html", { root: publicDir }));
 app.get("/contact", (_req, res) => res.sendFile("contact.html", { root: publicDir }));
