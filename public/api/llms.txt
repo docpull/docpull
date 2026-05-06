@@ -1,0 +1,43 @@
+# docpull API
+
+> REST API for PDF to Markdown extraction. Pay $0.001 USDC per page via x402 v2.
+
+## Base URL
+
+https://docpull.ai
+
+## Endpoints
+
+### GET /health
+No auth. Returns service status.
+Response: { status: "ok", service: "docpull", version: "1.0.0" }
+
+### GET /probe?url=<pdf_url>
+No auth. Free. Returns page count and cost estimate.
+Response: { pageCount: number, costUSDC: string, pricePerPage: "0.001 USDC" }
+
+### POST /extract
+Requires x402 v2 payment. Body: { url: string }
+Returns HTTP 402 with PAYMENT-REQUIRED header if no payment sent.
+Response: { success: true, pageCount: number, charCount: number, markdown: string }
+
+## Authentication
+
+No API keys. Payment via x402 v2 in USDC on Base mainnet.
+Use @x402/fetch client library to handle payment automatically.
+
+## Rate limits
+
+1000 requests per hour. Headers: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+
+## Error codes
+
+- 400 MISSING_URL — url field required
+- 400 PDF_FETCH_FAILED — could not fetch PDF
+- 402 Payment required — send x402 payment
+- 404 NOT_FOUND — endpoint not found
+- 500 INTERNAL_ERROR — server error
+
+## OpenAPI spec
+
+https://docpull.ai/openapi.json

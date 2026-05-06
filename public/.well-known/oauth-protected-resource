@@ -1,0 +1,16 @@
+{
+  "resource": "https://docpull.ai",
+  "resource_name": "docpull API",
+  "resource_description": "PDF to Markdown extraction API for AI agents. Uses x402 v2 micropayments instead of OAuth.",
+  "bearer_methods_supported": [],
+  "scopes_supported": [],
+  "authorization_servers": [],
+  "x402_payment": {
+    "protocol": "x402",
+    "version": 2,
+    "network": "eip155:8453",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402/facilitator",
+    "docs": "https://docpull.ai/llms.txt"
+  }
+}

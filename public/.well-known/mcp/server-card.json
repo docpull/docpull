@@ -1,0 +1,62 @@
+{
+  "name": "docpull",
+  "description": "PDF to Markdown extraction API for AI agents. Pay $0.001 USDC per page via x402 v2.",
+  "version": "1.0.0",
+  "serverUrl": "https://docpull.ai",
+  "transport": "http",
+  "payment": {
+    "protocol": "x402",
+    "version": 2,
+    "network": "eip155:8453",
+    "pricePerPage": "0.001 USDC"
+  },
+  "tools": [
+    {
+      "name": "extract_pdf",
+      "description": "Extract a PDF from a URL and return clean structured Markdown. Costs $0.001 USDC per page via x402.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly accessible URL of the PDF to extract"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "pageCount": { "type": "number" },
+          "charCount": { "type": "number" },
+          "markdown": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "probe_pdf",
+      "description": "Check page count and exact cost for a PDF before extracting. Free, no payment required.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly accessible URL of the PDF"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "pageCount": { "type": "number" },
+          "costUSDC": { "type": "string" },
+          "pricePerPage": { "type": "string" }
+        }
+      }
+    }
+  ]
+}

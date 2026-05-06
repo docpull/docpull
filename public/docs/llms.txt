@@ -1,0 +1,60 @@
+# docpull Documentation
+
+> PDF to Markdown API for AI agents.
+
+## Quick start
+
+1. Probe the PDF to get page count and cost:
+   GET https://docpull.ai/probe?url=https://example.com/doc.pdf
+
+2. Install x402 client:
+   npm install @x402/fetch @x402/evm viem
+
+3. Make a paid extraction:
+
+```js
+import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+const client = new x402Client().register("eip155:*", new ExactEvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+const res = await fetchWithPayment("https://docpull.ai/extract", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ url: "https://example.com/doc.pdf" }),
+});
+const { markdown, pageCount } = await res.json();
+```
+
+## Wallet setup
+
+You need a wallet with USDC on Base mainnet.
+- Get USDC: https://www.coinbase.com or bridge via https://bridge.base.org
+- Testnet USDC: https://faucet.circle.com (use Base Sepolia)
+
+## x402 payment flow
+
+1. Call POST /extract without payment headers
+2. Receive HTTP 402 with PAYMENT-REQUIRED header (base64 JSON)
+3. x402 client decodes payment requirements
+4. Client signs USDC transfer on Base mainnet
+5. Client retries request with X-PAYMENT header
+6. Server verifies payment via CDP facilitator
+7. Server returns extracted markdown
+
+## Output format
+
+Markdown with:
+- Headings detected from font size (# ## ###)
+- Bullet lists preserved (-)
+- Numbered lists preserved
+- Page separators (--- between pages)
+- Page number comments for multi-page docs
+
+## Full API reference
+
+https://docpull.ai/openapi.json
+https://docpull.ai/api/llms.txt

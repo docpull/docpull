@@ -8,6 +8,12 @@ import {
   declareDiscoveryExtension,
 } from "@x402/extensions/bazaar";
 import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const publicDir = join(__dirname, "../public");
 
 const app = express();
 app.use(express.json());
@@ -30,14 +36,67 @@ app.use((_req, res, next) => {
     '</openapi.json>; rel="service-desc"; type="application/json"',
     '</index.md>; rel="alternate"; type="text/markdown"',
     '</.well-known/ai-plugin.json>; rel="ai-plugin"',
+    '</.well-known/api-catalog>; rel="https://www.rfc-editor.org/info/rfc9727"',
   ].join(", "));
   res.setHeader("X-RateLimit-Limit", "1000");
   res.setHeader("X-RateLimit-Remaining", "999");
-  res.setHeader("X-RateLimit-Reset", Math.floor(Date.now() / 1000) + 3600);
+  res.setHeader("X-RateLimit-Reset", String(Math.floor(Date.now() / 1000) + 3600));
   next();
 });
 
-// ── ?mode=agent — BEFORE static files ─────────────────────────────────────
+// ── RFC 9727 API catalog with correct content-type ─────────────────────────
+app.get("/.well-known/api-catalog", (_req, res) => {
+  res.setHeader("Content-Type", 'application/linkset+json;profile="https://www.rfc-editor.org/info/rfc9727"');
+  res.json({
+    linkset: [{
+      anchor: "https://docpull.ai",
+      item: [{ href: "https://docpull.ai/openapi.json", type: "application/openapi+json", title: "docpull OpenAPI 3.1" }],
+      "service-desc": [{ href: "https://docpull.ai/openapi.json", type: "application/openapi+json" }],
+      describedby: [{ href: "https://docpull.ai/llms.txt", type: "text/plain" }],
+    }]
+  });
+});
+
+// ── RFC 9728 OAuth protected resource with correct content-type ────────────
+app.get("/.well-known/oauth-protected-resource", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.json({
+    resource: "https://docpull.ai",
+    resource_name: "docpull API",
+    resource_description: "PDF to Markdown extraction API. Uses x402 v2 micropayments instead of OAuth.",
+    bearer_methods_supported: [],
+    scopes_supported: [],
+    authorization_servers: [],
+    x402_payment: {
+      protocol: "x402",
+      version: 2,
+      network: "eip155:8453",
+      asset: USDC_BASE,
+      facilitator: "https://api.cdp.coinbase.com/platform/v2/x402/facilitator",
+    }
+  });
+});
+
+// ── x402 discovery/resources endpoint ─────────────────────────────────────
+app.get("/discovery/resources", (_req, res) => {
+  res.json({
+    resources: [{
+      url: `${BASE_URL}/extract`,
+      method: "POST",
+      description: "PDF to Markdown extraction. POST {url} to extract any PDF.",
+      payment: {
+        protocol: "x402",
+        version: 2,
+        network: NETWORK,
+        amount: "1000",
+        asset: USDC_BASE,
+        payTo: WALLET_ADDRESS,
+      }
+    }]
+  });
+});
+
+// ── ?mode=agent BEFORE static files ───────────────────────────────────────
 app.get("/", (req, res, next) => {
   if (req.query.mode !== "agent") return next();
   res.setHeader("Content-Type", "application/json");
@@ -63,8 +122,12 @@ app.get("/", (req, res, next) => {
     discovery: {
       openapi: "https://docpull.ai/openapi.json",
       llms: "https://docpull.ai/llms.txt",
+      llmsFull: "https://docpull.ai/llms-full.txt",
+      apiDocs: "https://docpull.ai/api/llms.txt",
+      docs: "https://docpull.ai/docs/llms.txt",
       aiPlugin: "https://docpull.ai/.well-known/ai-plugin.json",
       agentCard: "https://docpull.ai/.well-known/agent-card.json",
+      apiCatalog: "https://docpull.ai/.well-known/api-catalog",
       bazaar: "https://api.cdp.coinbase.com/platform/v2/x402/discovery/search?query=pdf+extraction",
     },
     rateLimits: {
@@ -74,23 +137,22 @@ app.get("/", (req, res, next) => {
   });
 });
 
-// ── Accept: text/markdown — BEFORE static files ───────────────────────────
+// ── Accept: text/markdown ──────────────────────────────────────────────────
 app.get("/", (req, res, next) => {
   const acceptHeader = req.headers["accept"] || "";
   if (!acceptHeader.includes("text/markdown")) return next();
   res.setHeader("Content-Type", "text/markdown");
   res.setHeader("Vary", "Accept");
-  res.sendFile("index.md", { root: "public" });
+  res.sendFile("index.md", { root: publicDir });
 });
 
 // ── Static files ───────────────────────────────────────────────────────────
-app.use(express.static("public"));
+app.use(express.static(publicDir));
 
 // ── x402 v2 + CDP facilitator + Bazaar extension ───────────────────────────
 const facilitatorClient = new HTTPFacilitatorClient(facilitator);
 const server = new x402ResourceServer(facilitatorClient)
   .register("eip155:*", new ExactEvmScheme());
-
 server.registerExtension(bazaarResourceServerExtension);
 
 const accepts = [{
@@ -146,12 +208,12 @@ app.use(
   )
 );
 
-// ── Health check (free) ────────────────────────────────────────────────────
+// ── Health check ───────────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "docpull", version: "1.0.0" });
 });
 
-// ── Probe (free) ───────────────────────────────────────────────────────────
+// ── Probe ──────────────────────────────────────────────────────────────────
 app.get("/probe", async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url query param required", code: "MISSING_URL" });

@@ -1,0 +1,26 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://docpull.ai",
+      "item": [
+        {
+          "href": "https://docpull.ai/openapi.json",
+          "type": "application/openapi+json",
+          "title": "docpull OpenAPI 3.1 specification"
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://docpull.ai/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://docpull.ai/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    }
+  ]
+}

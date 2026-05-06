@@ -20,6 +20,7 @@ User-agent: ByteSpider
 Disallow: /
 
 Sitemap: https://docpull.ai/sitemap.xml
+schemamap: https://docpull.ai/schema-map.xml
 
 # AI crawler policy
 Content-Signal: search=yes, ai-input=yes, ai-train=no

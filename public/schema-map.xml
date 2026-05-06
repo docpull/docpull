@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemamaps>
+  <schemamap>
+    <url>https://docpull.ai/</url>
+    <type>SoftwareApplication</type>
+  </schemamap>
+  <schemamap>
+    <url>https://docpull.ai/openapi.json</url>
+    <type>APIReference</type>
+  </schemamap>
+  <schemamap>
+    <url>https://docpull.ai/pricing.md</url>
+    <type>Offer</type>
+  </schemamap>
+</schemamaps>
