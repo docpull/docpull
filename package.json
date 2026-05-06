@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@coinbase/x402": "latest",
+    "@x402/express": "latest",
+    "@x402/core": "latest",
+    "@x402/evm": "latest",
     "express": "^4.19.2",
-    "pdfjs-dist": "^4.4.168",
-    "x402-express": "latest"
+    "pdfjs-dist": "^4.4.168"
   }
 }

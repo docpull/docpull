@@ -1,5 +1,7 @@
 import express from "express";
-import { paymentMiddleware } from "x402-express";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { facilitator } from "@coinbase/x402";
 import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
@@ -9,7 +11,7 @@ app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const NETWORK = process.env.NETWORK || "base";
+const NETWORK = "eip155:8453"; // Base mainnet CAIP-2
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 if (!WALLET_ADDRESS) {
@@ -17,7 +19,46 @@ if (!WALLET_ADDRESS) {
   process.exit(1);
 }
 
-// CDP_API_KEY_ID and CDP_API_KEY_SECRET are read automatically by @coinbase/x402
+// Use @coinbase/x402 facilitator config which handles CDP JWT auth
+// automatically via CDP_API_KEY_ID and CDP_API_KEY_SECRET env vars
+const facilitatorClient = new HTTPFacilitatorClient(facilitator);
+const server = new x402ResourceServer(facilitatorClient)
+  .register("eip155:*", new ExactEvmScheme());
+
+const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// ── x402 v2 middleware — BEFORE all route handlers ─────────────────────────
+app.use(
+  paymentMiddleware(
+    {
+      "GET /extract": {
+        accepts: [{
+          scheme: "exact",
+          price: "$0.001",
+          network: NETWORK,
+          payTo: WALLET_ADDRESS,
+          asset: USDC_BASE,
+          maxTimeoutSeconds: 300,
+        }],
+        description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
+        mimeType: "application/json",
+      },
+      "POST /extract": {
+        accepts: [{
+          scheme: "exact",
+          price: "$0.001",
+          network: NETWORK,
+          payTo: WALLET_ADDRESS,
+          asset: USDC_BASE,
+          maxTimeoutSeconds: 300,
+        }],
+        description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
+        mimeType: "application/json",
+      },
+    },
+    server
+  )
+);
 
 // ── Health check (free) ────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {
@@ -37,33 +78,7 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── x402 middleware applied globally before route handlers ─────────────────
-app.use(
-  paymentMiddleware(
-    WALLET_ADDRESS,
-    {
-      "GET /extract": {
-        price: "$0.001",
-        network: NETWORK,
-        config: {
-          description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
-          mimeType: "application/json",
-        },
-      },
-      "POST /extract": {
-        price: "$0.001",
-        network: NETWORK,
-        config: {
-          description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
-          mimeType: "application/json",
-        },
-      },
-    },
-    facilitator
-  )
-);
-
-// ── GET /extract — discovery info (gated by x402) ─────────────────────────
+// ── GET /extract — discovery info (gated) ─────────────────────────────────
 app.get("/extract", (_req, res) => {
   res.json({
     info: "POST to /extract with {url} body to extract a PDF to markdown.",
@@ -72,7 +87,7 @@ app.get("/extract", (_req, res) => {
   });
 });
 
-// ── POST /extract — actual extraction (gated by x402) ─────────────────────
+// ── POST /extract — extraction (gated) ────────────────────────────────────
 app.post("/extract", async (req, res, next) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "url body field required" });
@@ -98,5 +113,5 @@ app.listen(PORT, () => {
   console.log(`   Wallet : ${WALLET_ADDRESS}`);
   console.log(`   Network: ${NETWORK}`);
   console.log(`   Base URL: ${BASE_URL}`);
-  console.log(`   Facilitator: CDP (Bazaar-enabled)`);
+  console.log(`   Facilitator: CDP v2 (Bazaar-enabled)`);
 });
