@@ -16,6 +16,7 @@
     "@x402/express": "latest",
     "@x402/core": "latest",
     "@x402/evm": "latest",
+    "@x402/extensions": "latest",
     "express": "^4.19.2",
     "pdfjs-dist": "^4.4.168"
   }

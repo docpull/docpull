@@ -3,6 +3,10 @@ import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { facilitator } from "@coinbase/x402";
+import {
+  bazaarResourceServerExtension,
+  declareDiscoveryExtension,
+} from "@x402/extensions/bazaar";
 import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
 const app = express();
@@ -11,49 +15,77 @@ app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const NETWORK = "eip155:8453"; // Base mainnet CAIP-2
+const NETWORK = "eip155:8453";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 if (!WALLET_ADDRESS) {
   console.error("❌ WALLET_ADDRESS env var is required");
   process.exit(1);
 }
 
-// Use @coinbase/x402 facilitator config which handles CDP JWT auth
-// automatically via CDP_API_KEY_ID and CDP_API_KEY_SECRET env vars
+// ── x402 v2 resource server with CDP facilitator + Bazaar extension ─────────
 const facilitatorClient = new HTTPFacilitatorClient(facilitator);
 const server = new x402ResourceServer(facilitatorClient)
   .register("eip155:*", new ExactEvmScheme());
 
-const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+server.registerExtension(bazaarResourceServerExtension);
 
-// ── x402 v2 middleware — BEFORE all route handlers ─────────────────────────
+const accepts = [{
+  scheme: "exact",
+  price: "$0.001",
+  network: NETWORK,
+  payTo: WALLET_ADDRESS,
+  asset: USDC_BASE,
+  maxTimeoutSeconds: 300,
+}];
+
+const bazaarExtension = declareDiscoveryExtension({
+  input: { url: "https://example.com/document.pdf" },
+  inputSchema: {
+    properties: {
+      url: {
+        type: "string",
+        description: "Publicly accessible URL of the PDF to extract",
+      },
+    },
+    required: ["url"],
+  },
+  bodyType: "json",
+  output: {
+    example: {
+      success: true,
+      pageCount: 5,
+      charCount: 8200,
+      markdown: "# Document Title\n\n## Section 1\n\nBody text...",
+    },
+    schema: {
+      properties: {
+        success: { type: "boolean" },
+        pageCount: { type: "number" },
+        charCount: { type: "number" },
+        markdown: { type: "string" },
+      },
+      required: ["success", "pageCount", "charCount", "markdown"],
+    },
+  },
+});
+
+// ── x402 middleware BEFORE route handlers ──────────────────────────────────
 app.use(
   paymentMiddleware(
     {
       "GET /extract": {
-        accepts: [{
-          scheme: "exact",
-          price: "$0.001",
-          network: NETWORK,
-          payTo: WALLET_ADDRESS,
-          asset: USDC_BASE,
-          maxTimeoutSeconds: 300,
-        }],
+        accepts,
         description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
         mimeType: "application/json",
+        extensions: { ...bazaarExtension },
       },
       "POST /extract": {
-        accepts: [{
-          scheme: "exact",
-          price: "$0.001",
-          network: NETWORK,
-          payTo: WALLET_ADDRESS,
-          asset: USDC_BASE,
-          maxTimeoutSeconds: 300,
-        }],
+        accepts,
         description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
         mimeType: "application/json",
+        extensions: { ...bazaarExtension },
       },
     },
     server
@@ -65,7 +97,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "docpull", version: "1.0.0" });
 });
 
-// ── Page-count probe (free) ────────────────────────────────────────────────
+// ── Probe (free) ───────────────────────────────────────────────────────────
 app.get("/probe", async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url query param required" });
@@ -78,7 +110,7 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── GET /extract — discovery info (gated) ─────────────────────────────────
+// ── GET /extract (gated) ───────────────────────────────────────────────────
 app.get("/extract", (_req, res) => {
   res.json({
     info: "POST to /extract with {url} body to extract a PDF to markdown.",
@@ -87,7 +119,7 @@ app.get("/extract", (_req, res) => {
   });
 });
 
-// ── POST /extract — extraction (gated) ────────────────────────────────────
+// ── POST /extract (gated) ──────────────────────────────────────────────────
 app.post("/extract", async (req, res, next) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "url body field required" });
@@ -113,5 +145,5 @@ app.listen(PORT, () => {
   console.log(`   Wallet : ${WALLET_ADDRESS}`);
   console.log(`   Network: ${NETWORK}`);
   console.log(`   Base URL: ${BASE_URL}`);
-  console.log(`   Facilitator: CDP v2 (Bazaar-enabled)`);
+  console.log(`   Facilitator: CDP v2 + Bazaar extension`);
 });
