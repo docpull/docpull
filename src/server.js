@@ -191,6 +191,21 @@ app.get("/schema.json", (_req, res) => {
   });
 });
 
+// ── /.well-known/mcp discovery (must be before static files) ─────────────
+app.get("/.well-known/mcp", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.json({
+    mcpServers: {
+      docpull: {
+        type: "streamable-http",
+        url: "https://docpull.ai/mcp",
+        name: "docpull",
+        description: "PDF to Markdown extraction API for AI agents"
+      }
+    }
+  });
+});
+
 // ── Static files ───────────────────────────────────────────────────────────
 app.use(express.static(publicDir));
 
@@ -263,21 +278,6 @@ app.use(
     server
   )
 );
-
-// ── /.well-known/mcp discovery redirect ───────────────────────────────────
-app.get("/.well-known/mcp", (_req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.json({
-    mcpServers: {
-      docpull: {
-        type: "streamable-http",
-        url: "https://docpull.ai/mcp",
-        name: "docpull",
-        description: "PDF to Markdown extraction API for AI agents"
-      }
-    }
-  });
-});
 
 // ── MCP endpoint (Streamable HTTP) ────────────────────────────────────────
 app.all("/mcp", async (req, res) => {
