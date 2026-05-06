@@ -76,7 +76,8 @@ app.get("/", (req, res, next) => {
 
 // ── Accept: text/markdown — BEFORE static files ───────────────────────────
 app.get("/", (req, res, next) => {
-  if (!req.accepts("text/markdown")) return next();
+  const acceptHeader = req.headers["accept"] || "";
+  if (!acceptHeader.includes("text/markdown")) return next();
   res.setHeader("Content-Type", "text/markdown");
   res.setHeader("Vary", "Accept");
   res.sendFile("index.md", { root: "public" });
