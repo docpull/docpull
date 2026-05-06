@@ -219,11 +219,6 @@ app.post("/.well-known/mcp", async (req, res) => {
   }
 });
 
-app.get("/blog", (_req, res) => res.sendFile("blog/index.html", { root: publicDir }));
-app.get("/blog/pdf-extraction-ai-agent-pipelines", (_req, res) => res.sendFile("blog/pdf-extraction-ai-agent-pipelines.html", { root: publicDir }));
-app.get("/blog/pdf-to-markdown-rag-pipelines", (_req, res) => res.sendFile("blog/pdf-to-markdown-rag-pipelines.html", { root: publicDir }));
-app.get("/blog/building-agent-native-apis-x402", (_req, res) => res.sendFile("blog/building-agent-native-apis-x402.html", { root: publicDir }));
-
 // ── Static files ───────────────────────────────────────────────────────────
 app.use(express.static(publicDir));
 
@@ -233,6 +228,10 @@ app.get("/.well-known/openapi.json", (_req, res) => res.sendFile("openapi.json",
 app.get("/developers", (_req, res) => res.sendFile("docs/llms.txt", { root: publicDir }));
 
 // ── Trust anchor pages (without .html extension) ──────────────────────────
+app.get("/blog", (_req, res) => res.sendFile("blog/index.html", { root: publicDir }));
+app.get("/blog/pdf-extraction-ai-agent-pipelines", (_req, res) => res.sendFile("blog/pdf-extraction-ai-agent-pipelines.html", { root: publicDir }));
+app.get("/blog/pdf-to-markdown-rag-pipelines", (_req, res) => res.sendFile("blog/pdf-to-markdown-rag-pipelines.html", { root: publicDir }));
+app.get("/blog/building-agent-native-apis-x402", (_req, res) => res.sendFile("blog/building-agent-native-apis-x402.html", { root: publicDir }));
 app.get("/about", (_req, res) => res.sendFile("about.html", { root: publicDir }));
 app.get("/compare", (_req, res) => res.sendFile("compare.html", { root: publicDir }));
 app.get("/contact", (_req, res) => res.sendFile("contact.html", { root: publicDir }));
@@ -326,6 +325,23 @@ app.post("/mcp", async (req, res) => {
       res.status(500).json({ error: "MCP server error", code: "MCP_ERROR" });
     }
   }
+});
+
+// ── Status page ───────────────────────────────────────────────────────────
+app.get("/status", (_req, res) => {
+  res.json({
+    status: "operational",
+    service: "docpull",
+    version: "1.0.0",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: "operational",
+      probe: "operational",
+      extract: "operational",
+      mcp: "operational",
+    }
+  });
 });
 
 // ── Health check ───────────────────────────────────────────────────────────
