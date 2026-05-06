@@ -48,6 +48,17 @@ const res = await fetchWithPayment("https://docpull.ai/extract", {
 const { markdown, pageCount } = await res.json();
 ```
 
+## MCP Server
+
+docpull exposes a Model Context Protocol (MCP) server via Streamable HTTP transport.
+
+- MCP endpoint: https://docpull.ai/mcp
+- Transport: Streamable HTTP (stateless)
+- Tools: probe_pdf, extract_pdf, health_check
+
+Connect with any MCP-compatible client:
+{ "type": "streamable-http", "url": "https://docpull.ai/mcp" }
+
 ## Links
 
 - [OpenAPI spec](https://docpull.ai/openapi.json)

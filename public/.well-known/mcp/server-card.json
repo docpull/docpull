@@ -2,8 +2,8 @@
   "name": "docpull",
   "description": "PDF to Markdown extraction API for AI agents. Pay $0.001 USDC per page via x402 v2.",
   "version": "1.0.0",
-  "serverUrl": "https://docpull.ai",
-  "transport": "http",
+  "serverUrl": "https://docpull.ai/mcp",
+  "transport": "streamable-http",
   "payment": {
     "protocol": "x402",
     "version": 2,
@@ -16,7 +16,9 @@
       "description": "Extract a PDF from a URL and return clean structured Markdown. Costs $0.001 USDC per page via x402.",
       "inputSchema": {
         "type": "object",
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "properties": {
           "url": {
             "type": "string",
@@ -28,10 +30,18 @@
       "outputSchema": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
-          "pageCount": { "type": "number" },
-          "charCount": { "type": "number" },
-          "markdown": { "type": "string" }
+          "success": {
+            "type": "boolean"
+          },
+          "pageCount": {
+            "type": "number"
+          },
+          "charCount": {
+            "type": "number"
+          },
+          "markdown": {
+            "type": "string"
+          }
         }
       }
     },
@@ -40,7 +50,9 @@
       "description": "Check page count and exact cost for a PDF before extracting. Free, no payment required.",
       "inputSchema": {
         "type": "object",
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "properties": {
           "url": {
             "type": "string",
@@ -52,10 +64,24 @@
       "outputSchema": {
         "type": "object",
         "properties": {
-          "pageCount": { "type": "number" },
-          "costUSDC": { "type": "string" },
-          "pricePerPage": { "type": "string" }
+          "pageCount": {
+            "type": "number"
+          },
+          "costUSDC": {
+            "type": "string"
+          },
+          "pricePerPage": {
+            "type": "string"
+          }
         }
+      }
+    },
+    {
+      "name": "health_check",
+      "description": "Check if the docpull service is running and available.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
       }
     }
   ]

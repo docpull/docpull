@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "docpull": {
+      "type": "streamable-http",
+      "url": "https://docpull.ai/mcp",
+      "description": "PDF to Markdown extraction API for AI agents"
+    }
+  }
+}
