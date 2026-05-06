@@ -1,7 +1,6 @@
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402/express";
-import { ExactEvmScheme } from "@x402/evm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { paymentMiddleware } from "x402-express";
+import { facilitator } from "@coinbase/x402";
 import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
 const app = express();
@@ -10,9 +9,7 @@ app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const NETWORK = process.env.NETWORK || "eip155:8453"; // Base mainnet CAIP-2
-const CDP_API_KEY_ID = process.env.CDP_API_KEY_ID;
-const CDP_API_KEY_SECRET = process.env.CDP_API_KEY_SECRET;
+const NETWORK = process.env.NETWORK || "base";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 if (!WALLET_ADDRESS) {
@@ -20,53 +17,9 @@ if (!WALLET_ADDRESS) {
   process.exit(1);
 }
 
-// ── x402 v2 resource server with CDP facilitator ───────────────────────────
-const facilitatorClient = new HTTPFacilitatorClient({
-  url: "https://api.cdp.coinbase.com/platform/v2/x402/facilitator",
-  createAuthHeaders: async () => {
-    // CDP uses API key id + secret as Bearer token (base64 encoded)
-    const credentials = Buffer.from(`${CDP_API_KEY_ID}:${CDP_API_KEY_SECRET}`).toString("base64");
-    return { Authorization: `Basic ${credentials}` };
-  },
-});
+// CDP_API_KEY_ID and CDP_API_KEY_SECRET are read automatically by @coinbase/x402
 
-const resourceServer = new x402ResourceServer(facilitatorClient)
-  .register("eip155:*", new ExactEvmScheme());
-
-// USDC on Base mainnet
-const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-
-const routes = {
-  "GET /extract": {
-    accepts: [{
-      scheme: "exact",
-      price: "$0.001",
-      network: NETWORK,
-      payTo: WALLET_ADDRESS,
-      asset: USDC_BASE,
-      maxTimeoutSeconds: 300,
-    }],
-    description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
-    mimeType: "application/json",
-  },
-  "POST /extract": {
-    accepts: [{
-      scheme: "exact",
-      price: "$0.001",
-      network: NETWORK,
-      payTo: WALLET_ADDRESS,
-      asset: USDC_BASE,
-      maxTimeoutSeconds: 300,
-    }],
-    description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
-    mimeType: "application/json",
-  },
-};
-
-// Apply x402 middleware BEFORE route handlers
-app.use(paymentMiddleware(routes, resourceServer));
-
-// ── Health check (free — not in routes so no payment required) ─────────────
+// ── Health check (free) ────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "docpull", version: "1.0.0" });
 });
@@ -84,16 +37,42 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── GET /extract — info (gated by x402) ───────────────────────────────────
+// ── x402 middleware applied globally before route handlers ─────────────────
+app.use(
+  paymentMiddleware(
+    WALLET_ADDRESS,
+    {
+      "GET /extract": {
+        price: "$0.001",
+        network: NETWORK,
+        config: {
+          description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
+          mimeType: "application/json",
+        },
+      },
+      "POST /extract": {
+        price: "$0.001",
+        network: NETWORK,
+        config: {
+          description: "PDF to Markdown extraction API. POST {url} to extract any PDF. $0.001 per page.",
+          mimeType: "application/json",
+        },
+      },
+    },
+    facilitator
+  )
+);
+
+// ── GET /extract — discovery info (gated by x402) ─────────────────────────
 app.get("/extract", (_req, res) => {
   res.json({
-    info: "POST to /extract with {url} in the body to extract a PDF to markdown.",
+    info: "POST to /extract with {url} body to extract a PDF to markdown.",
     pricing: "$0.001 USDC per page",
     probe: "GET /probe?url=<pdf_url> for free page count and cost estimate",
   });
 });
 
-// ── POST /extract — extraction (gated by x402) ────────────────────────────
+// ── POST /extract — actual extraction (gated by x402) ─────────────────────
 app.post("/extract", async (req, res, next) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "url body field required" });

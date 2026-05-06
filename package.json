@@ -12,13 +12,9 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@x402/express": "latest",
-    "@x402/core": "latest",
-    "@x402/evm": "latest",
+    "@coinbase/x402": "latest",
     "express": "^4.19.2",
-    "pdfjs-dist": "^4.4.168"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0"
+    "pdfjs-dist": "^4.4.168",
+    "x402-express": "latest"
   }
 }
