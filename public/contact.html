@@ -11,13 +11,35 @@
     h1 { font-size: 2rem; margin-bottom: 0.5rem; }
     a { color: #2d6a4f; }
     nav { margin-bottom: 3rem; }
+    .contact-item { margin-bottom: 1.5rem; }
+    code { background: #f5f5f5; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
   </style>
 </head>
 <body>
   <nav><a href="/">← docpull</a></nav>
   <h1>Contact</h1>
-  <p>Email: <a href="mailto:jesse@docpull.ai">jesse@docpull.ai</a></p>
-  <p>GitHub: <a href="https://github.com/docpull/docpull">github.com/docpull/docpull</a></p>
-  <p>For bug reports and feature requests, please open an issue on <a href="https://github.com/docpull/docpull/issues">GitHub</a>.</p>
+  <p>docpull is built and maintained by Jesse Deatherage. We welcome questions, bug reports, integration help, and feedback from developers and AI agent builders.</p>
+
+  <div class="contact-item">
+    <h2>Email</h2>
+    <p><a href="mailto:hello@docpull.ai">hello@docpull.ai</a></p>
+    <p>Best for: billing questions, partnership inquiries, and anything requiring a private conversation.</p>
+  </div>
+
+  <div class="contact-item">
+    <h2>GitHub</h2>
+    <p><a href="https://github.com/docpull/docpull" target="_blank">github.com/docpull/docpull</a></p>
+    <p>Best for: bug reports, feature requests, and contributions. Open an issue and we typically respond within 24 hours.</p>
+  </div>
+
+  <div class="contact-item">
+    <h2>API Support</h2>
+    <p>Having trouble integrating? Check the <a href="/llms.txt">llms.txt</a> and <a href="/openapi.json">OpenAPI spec</a> first — most integration questions are answered there. For x402 payment issues, verify your wallet has USDC on Base mainnet and that you are using an x402 v2 compatible client.</p>
+  </div>
+
+  <div class="contact-item">
+    <h2>MCP Integration</h2>
+    <p>The docpull MCP server is available at <code>https://docpull.ai/mcp</code> via Streamable HTTP transport. If you are having trouble connecting, email us with your client and error details.</p>
+  </div>
 </body>
 </html>

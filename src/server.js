@@ -191,19 +191,32 @@ app.get("/schema.json", (_req, res) => {
   });
 });
 
-// ── /.well-known/mcp discovery (must be before static files) ─────────────
+// ── /.well-known/mcp — acts as MCP endpoint directly ─────────────────────
 app.get("/.well-known/mcp", (_req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.json({
-    mcpServers: {
-      docpull: {
-        type: "streamable-http",
-        url: "https://docpull.ai/mcp",
-        name: "docpull",
-        description: "PDF to Markdown extraction API for AI agents"
-      }
+  res.status(405).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Method Not Allowed: Use POST" },
+    id: null,
+    _meta: {
+      transport: "streamable-http",
+      endpoint: "https://docpull.ai/.well-known/mcp",
+      serverInfo: { name: "docpull", version: "1.0.0" }
     }
   });
+});
+
+app.post("/.well-known/mcp", async (req, res) => {
+  try {
+    const server = createMcpServer();
+    const transport = createMcpTransport();
+    await server.connect(transport);
+    await transport.handleRequest(req, res, req.body);
+  } catch (err) {
+    console.error("MCP well-known error:", err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "MCP server error", code: "MCP_ERROR" });
+    }
+  }
 });
 
 // ── Static files ───────────────────────────────────────────────────────────
@@ -216,6 +229,7 @@ app.get("/developers", (_req, res) => res.sendFile("docs/llms.txt", { root: publ
 
 // ── Trust anchor pages (without .html extension) ──────────────────────────
 app.get("/about", (_req, res) => res.sendFile("about.html", { root: publicDir }));
+app.get("/compare", (_req, res) => res.sendFile("compare.html", { root: publicDir }));
 app.get("/contact", (_req, res) => res.sendFile("contact.html", { root: publicDir }));
 app.get("/privacy", (_req, res) => res.sendFile("privacy.html", { root: publicDir }));
 app.get("/pricing", (_req, res) => res.sendFile("pricing.md", { root: publicDir }));

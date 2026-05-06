@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>docpull vs Alternatives — PDF to Markdown API Comparison</title>
+  <meta name="description" content="Compare docpull to other PDF extraction APIs. Agent-native, pay-per-page via x402, no subscriptions.">
+  <link rel="canonical" href="https://docpull.ai/compare">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"docpull vs Alternatives","description":"Comparison of docpull PDF to Markdown API vs traditional PDF extraction tools","url":"https://docpull.ai/compare"}
+  </script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.7; color: #111; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; }
+    a { color: #2d6a4f; }
+    nav { margin-bottom: 3rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    th { background: #0d0d0d; color: white; padding: 0.75rem 1rem; text-align: left; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #eee; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+    .yes { color: #2d6a4f; font-weight: 600; }
+    .no { color: #999; }
+    .highlight td:first-child { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <nav><a href="/">← docpull</a></nav>
+  <h1>docpull vs Alternatives</h1>
+  <p>docpull is purpose-built for AI agents. Unlike traditional PDF extraction tools, it requires no accounts, no API keys, and no subscriptions. Any agent with a Base wallet and USDC can call it autonomously via the x402 v2 payment protocol.</p>
+
+  <h2>Feature Comparison</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>docpull</th>
+        <th>Traditional PDF APIs</th>
+        <th>PDFMiner / pdfplumber</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>Agent-native (no human setup)</td>
+        <td class="yes">✓ Yes</td>
+        <td class="no">✗ Requires API key signup</td>
+        <td class="no">✗ Requires installation</td>
+      </tr>
+      <tr>
+        <td>Payment model</td>
+        <td class="yes">/bin/sh.001/page via x402</td>
+        <td class="no">Monthly subscription</td>
+        <td class="yes">Free (self-hosted)</td>
+      </tr>
+      <tr>
+        <td>No account required</td>
+        <td class="yes">✓ Yes</td>
+        <td class="no">✗ Account required</td>
+        <td class="yes">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>MCP server</td>
+        <td class="yes">✓ Yes (Streamable HTTP)</td>
+        <td class="no">✗ No</td>
+        <td class="no">✗ No</td>
+      </tr>
+      <tr>
+        <td>x402 v2 payments</td>
+        <td class="yes">✓ Yes</td>
+        <td class="no">✗ No</td>
+        <td class="no">✗ No</td>
+      </tr>
+      <tr>
+        <td>CDP Bazaar indexed</td>
+        <td class="yes">✓ Yes</td>
+        <td class="no">✗ No</td>
+        <td class="no">✗ No</td>
+      </tr>
+      <tr>
+        <td>Output format</td>
+        <td>Structured Markdown</td>
+        <td>JSON / raw text</td>
+        <td>Raw text</td>
+      </tr>
+      <tr>
+        <td>Heading detection</td>
+        <td class="yes">✓ Font-size heuristics</td>
+        <td class="no">Varies</td>
+        <td class="no">✗ No</td>
+      </tr>
+      <tr>
+        <td>Hosted API</td>
+        <td class="yes">✓ Yes</td>
+        <td class="yes">✓ Yes</td>
+        <td class="no">✗ Self-hosted only</td>
+      </tr>
+      <tr>
+        <td>Free tier</td>
+        <td>/probe endpoint (free)</td>
+        <td>Often limited free tier</td>
+        <td>Fully free</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Why agents prefer docpull</h2>
+  <p>Traditional PDF APIs require a human developer to sign up, manage API keys, and configure billing. This creates friction that prevents AI agents from autonomously accessing PDF extraction capabilities.</p>
+  <p>docpull eliminates this entirely. An agent discovers docpull via the CDP Bazaar or MCP registry, calls <code>/probe</code> to check cost, then calls <code>/extract</code> — the x402 protocol handles payment settlement on Base mainnet with no human intervention required.</p>
+  <p>Unlike structured JSON extraction tools (which require custom extraction instructions), docpull returns clean Markdown that preserves document structure and is immediately usable in agent pipelines for RAG, summarization, or further analysis.</p>
+
+  <h2>When to use docpull</h2>
+  <ul>
+    <li>Your agent needs to ingest PDF documents autonomously</li>
+    <li>You want pay-per-use pricing without subscription overhead</li>
+    <li>You are building an x402-native agent pipeline on Base</li>
+    <li>You need structured Markdown output (not raw text)</li>
+    <li>You want MCP tool integration for Claude, ChatGPT, or other MCP clients</li>
+  </ul>
+
+  <h2>When to use alternatives</h2>
+  <ul>
+    <li>You need structured JSON extraction with custom field mapping (consider Strale)</li>
+    <li>You are processing PDFs in a traditional server-side pipeline (consider pdfplumber)</li>
+    <li>You need OCR for scanned documents (docpull uses pdfjs-dist, which requires selectable text)</li>
+  </ul>
+
+  <p style="margin-top:2rem"><a href="/">← Back to docpull</a> · <a href="/openapi.json">API Docs</a> · <a href="/pricing">Pricing</a></p>
+</body>
+</html>
