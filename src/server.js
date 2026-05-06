@@ -10,30 +10,39 @@ import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
 const app = express();
 app.use(express.json());
-
-// Serve landing page
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
-const NETWORK = process.env.NETWORK || "eip155:8453"; // Base mainnet
+const NETWORK = process.env.NETWORK || "eip155:8453";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const CDP_API_KEY_ID = process.env.CDP_API_KEY_ID;
+const CDP_API_KEY_SECRET = process.env.CDP_API_KEY_SECRET;
 
 if (!WALLET_ADDRESS) {
   console.error("❌ WALLET_ADDRESS env var is required");
   process.exit(1);
 }
 
-// ── x402 v2 setup ──────────────────────────────────────────────────────────
+if (!CDP_API_KEY_ID || !CDP_API_KEY_SECRET) {
+  console.error("❌ CDP_API_KEY_ID and CDP_API_KEY_SECRET are required");
+  process.exit(1);
+}
+
+// ── x402 v2 setup with CDP facilitator ────────────────────────────────────
 const facilitatorClient = new HTTPFacilitatorClient({
   url: "https://api.cdp.coinbase.com/platform/v2/x402/facilitator",
+  auth: {
+    keyId: CDP_API_KEY_ID,
+    keySecret: CDP_API_KEY_SECRET,
+  },
 });
 
 const server = new x402ResourceServer(facilitatorClient);
 registerExactEvmScheme(server);
 server.registerExtension(bazaarResourceServerExtension);
 
-// ── USDC contract address on Base mainnet ──────────────────────────────────
+// ── USDC on Base mainnet ───────────────────────────────────────────────────
 const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 // ── Health check (free) ────────────────────────────────────────────────────
@@ -41,7 +50,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "docpull", version: "1.0.0" });
 });
 
-// ── Page-count probe (free) ─────────────────────────────────────────────────
+// ── Page-count probe (free) ────────────────────────────────────────────────
 app.get("/probe", async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url query param required" });
@@ -55,9 +64,7 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── Extract endpoint — x402 v2 with Bazaar discovery ───────────────────────
-// Uses a fixed minimum price of $0.001 (1 page) for the 402 response.
-// Actual charge is computed after payment clears based on real page count.
+// ── Extract endpoint — x402 v2 + CDP Bazaar discovery ─────────────────────
 app.use(
   paymentMiddleware(
     {
@@ -65,7 +72,7 @@ app.use(
         accepts: {
           scheme: "exact",
           network: NETWORK,
-          amount: "1000", // minimum: $0.001 in USDC atomic units
+          amount: "1000",
           asset: USDC_BASE,
           payTo: WALLET_ADDRESS,
           maxTimeoutSeconds: 300,
@@ -128,7 +135,7 @@ app.post("/extract", async (req, res, next) => {
   }
 });
 
-// ── Error handler ───────────────────────────────────────────────────────────
+// ── Error handler ──────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: err.message || "Internal server error" });
