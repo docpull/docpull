@@ -57,7 +57,7 @@ app.post("/extract", async (req, res, next) => {
   const middleware = paymentMiddleware(
     WALLET_ADDRESS,
     {
-      [`POST ${BASE_URL}/extract`]: {
+      [`POST /extract`]: {
         price,
         network: NETWORK,
         config: {
