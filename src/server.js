@@ -146,8 +146,58 @@ app.get("/", (req, res, next) => {
   res.sendFile("index.md", { root: publicDir });
 });
 
+// ── Serve homepage explicitly with correct content-type ───────────────────
+app.get("/", (_req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.sendFile("index.html", { root: publicDir });
+});
+
+// ── /schema.json — standalone JSON-LD for scanners ────────────────────────
+app.get("/schema.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/ld+json");
+  res.json({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://docpull.ai/#app",
+        "name": "docpull",
+        "url": "https://docpull.ai",
+        "description": "PDF to Markdown API for AI agents. Pay $0.001 USDC per page via x402 v2. No accounts, no API keys, no subscriptions.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0.001", "priceCurrency": "USDC" },
+        "sameAs": ["https://github.com/docpull/docpull"]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://docpull.ai/#org",
+        "name": "docpull",
+        "url": "https://docpull.ai",
+        "email": "jesse@docpull.ai",
+        "sameAs": ["https://github.com/docpull/docpull"],
+        "contactPoint": { "@type": "ContactPoint", "email": "jesse@docpull.ai", "contactType": "technical support" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://docpull.ai/#faq",
+        "mainEntity": [
+          { "@type": "Question", "name": "How much does docpull cost?", "acceptedAnswer": { "@type": "Answer", "text": "$0.001 USDC per page via x402 on Base mainnet. No subscriptions or API keys." } },
+          { "@type": "Question", "name": "Do I need an API key?", "acceptedAnswer": { "@type": "Answer", "text": "No API keys or accounts needed. Any agent with a Base wallet and USDC can call it immediately." } }
+        ]
+      }
+    ]
+  });
+});
+
 // ── Static files ───────────────────────────────────────────────────────────
 app.use(express.static(publicDir));
+
+// ── Trust anchor pages (without .html extension) ──────────────────────────
+app.get("/about", (_req, res) => res.sendFile("about.html", { root: publicDir }));
+app.get("/contact", (_req, res) => res.sendFile("contact.html", { root: publicDir }));
+app.get("/privacy", (_req, res) => res.sendFile("privacy.html", { root: publicDir }));
+app.get("/pricing", (_req, res) => res.sendFile("pricing.md", { root: publicDir }));
 
 // ── x402 v2 + CDP facilitator + Bazaar extension ───────────────────────────
 const facilitatorClient = new HTTPFacilitatorClient(facilitator);
@@ -270,3 +320,5 @@ app.listen(PORT, () => {
   console.log(`   Base URL: ${BASE_URL}`);
   console.log(`   Facilitator: CDP v2 + Bazaar extension`);
 });
+
+// PATCH: this gets appended to server.js above - see full rewrite below
