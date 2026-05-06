@@ -1,8 +1,7 @@
 import express from "express";
 import { paymentMiddleware } from "x402-express";
-import { facilitator } from "x402-express";
-import { extractPdfToMarkdown } from "./extractor.js";
-import { getPageCount } from "./extractor.js";
+import { facilitator } from "@coinbase/x402";
+import { extractPdfToMarkdown, getPageCount } from "./extractor.js";
 
 const app = express();
 app.use(express.json());
@@ -23,7 +22,6 @@ app.get("/health", (_req, res) => {
 });
 
 // ── Page-count probe (free) ─────────────────────────────────────────────────
-// Lets callers calculate cost before committing payment
 app.get("/probe", async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url query param required" });
@@ -37,14 +35,7 @@ app.get("/probe", async (req, res) => {
   }
 });
 
-// ── x402 facilitator endpoint (required by protocol) ───────────────────────
-app.post(
-  "/facilitator",
-  facilitator({ network: NETWORK, walletAddress: WALLET_ADDRESS })
-);
-
-// ── Dynamic payment middleware factory ─────────────────────────────────────
-// We need dynamic pricing (pages × $0.001), so we wrap the middleware per-request
+// ── Extract endpoint with dynamic x402 pricing ─────────────────────────────
 app.post("/extract", async (req, res, next) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "url body field required" });
@@ -56,24 +47,20 @@ app.post("/extract", async (req, res, next) => {
     return res.status(400).json({ error: `Cannot fetch PDF: ${err.message}` });
   }
 
-  // Price in USDC atomic units (6 decimals). $0.001 = 1000 units
-  const priceAtomicUSDC = pageCount * 1000; // 1000 = $0.001 in 6-decimal USDC
+  const price = `$${(pageCount * 0.001).toFixed(6)}`;
 
   const middleware = paymentMiddleware(
     WALLET_ADDRESS,
     {
       [`POST ${BASE_URL}/extract`]: {
-        price: `$${(pageCount * 0.001).toFixed(6)}`,
+        price,
         network: NETWORK,
         config: { description: `PDF extraction – ${pageCount} pages` },
       },
     },
-    {
-      url: `${BASE_URL}/facilitator`,
-    }
+    facilitator
   );
 
-  // Run x402 middleware, then fall through to handler
   middleware(req, res, async () => {
     try {
       const markdown = await extractPdfToMarkdown(url);
