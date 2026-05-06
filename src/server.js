@@ -280,7 +280,22 @@ app.use(
 );
 
 // ── MCP endpoint (Streamable HTTP) ────────────────────────────────────────
-app.all("/mcp", async (req, res) => {
+// GET /mcp — return 405 to signal Streamable HTTP (not legacy SSE)
+app.get("/mcp", (_req, res) => {
+  res.status(405).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Method Not Allowed: Use POST for MCP requests" },
+    id: null,
+    _meta: {
+      transport: "streamable-http",
+      endpoint: "https://docpull.ai/mcp",
+      serverInfo: { name: "docpull", version: "1.0.0" }
+    }
+  });
+});
+
+// POST /mcp — handle MCP JSON-RPC requests
+app.post("/mcp", async (req, res) => {
   try {
     const server = createMcpServer();
     const transport = createMcpTransport();
