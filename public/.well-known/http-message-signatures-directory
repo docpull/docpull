@@ -1,0 +1,13 @@
+{
+  "keys": [
+    {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "kid": "docpull-bot-key-1",
+      "use": "sig",
+      "nbf": 1778113668,
+      "exp": 1809649668,
+      "x": "XdwG98h2KPmgo7XwWGmPpMwiTFiMRSZbxrtRavfupCw"
+    }
+  ]
+}

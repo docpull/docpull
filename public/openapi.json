@@ -14,7 +14,17 @@
       "network": "eip155:8453",
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "pricePerPage": "0.001 USDC"
-    }
+    },
+    "x-ratelimit": {
+      "requestsPerHour": 1000,
+      "headers": [
+        "X-RateLimit-Limit",
+        "X-RateLimit-Remaining",
+        "X-RateLimit-Reset"
+      ],
+      "retryGuidance": "On 429, check X-RateLimit-Reset header for retry timestamp. Implement exponential backoff starting at 1 second."
+    },
+    "x-status": "https://docpull.ai/status"
   },
   "servers": [
     {
@@ -36,9 +46,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string", "example": "ok" },
-                    "service": { "type": "string", "example": "docpull" },
-                    "version": { "type": "string", "example": "1.0.0" }
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "docpull"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    }
                   }
                 }
               }
@@ -51,14 +70,17 @@
       "get": {
         "operationId": "probePdf",
         "summary": "Get page count and cost estimate",
-        "description": "Returns the number of pages in a PDF and the exact cost to extract it. Free — no payment required.",
+        "description": "Returns the number of pages in a PDF and the exact cost to extract it. Free \u2014 no payment required.",
         "parameters": [
           {
             "name": "url",
             "in": "query",
             "required": true,
             "description": "Publicly accessible URL of the PDF",
-            "schema": { "type": "string", "format": "uri" }
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            }
           }
         ],
         "responses": {
@@ -69,9 +91,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "pageCount": { "type": "integer", "example": 12 },
-                    "costUSDC": { "type": "string", "example": "0.012000" },
-                    "pricePerPage": { "type": "string", "example": "0.001 USDC" }
+                    "pageCount": {
+                      "type": "integer",
+                      "example": 12
+                    },
+                    "costUSDC": {
+                      "type": "string",
+                      "example": "0.012000"
+                    },
+                    "pricePerPage": {
+                      "type": "string",
+                      "example": "0.001 USDC"
+                    }
                   }
                 }
               }
@@ -84,7 +115,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -97,7 +130,7 @@
       "post": {
         "operationId": "extractPdf",
         "summary": "Extract PDF to Markdown",
-        "description": "Downloads a PDF from the provided URL and returns clean structured Markdown. Requires x402 v2 payment of $0.001 USDC per page on Base mainnet. Call /probe first to get the exact cost.",
+        "description": "Downloads a PDF from the provided URL and returns clean structured Markdown. Requires x402 v2 payment of $0.001 USDC per page on Base mainnet. Call /probe first to get the exact cost. Rate limit: 1000 requests/hour. Returns X-RateLimit-* headers. On 429, wait until X-RateLimit-Reset timestamp.",
         "x-payment": {
           "protocol": "x402",
           "version": 2,
@@ -111,7 +144,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["url"],
+                "required": [
+                  "url"
+                ],
                 "properties": {
                   "url": {
                     "type": "string",
@@ -132,10 +167,22 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "example": true },
-                    "pageCount": { "type": "integer", "example": 12 },
-                    "charCount": { "type": "integer", "example": 18432 },
-                    "markdown": { "type": "string", "example": "# Title\n\n## Section 1\n\nBody text..." }
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "pageCount": {
+                      "type": "integer",
+                      "example": 12
+                    },
+                    "charCount": {
+                      "type": "integer",
+                      "example": 18432
+                    },
+                    "markdown": {
+                      "type": "string",
+                      "example": "# Title\n\n## Section 1\n\nBody text..."
+                    }
                   }
                 }
               }
@@ -146,7 +193,9 @@
             "headers": {
               "PAYMENT-REQUIRED": {
                 "description": "Base64-encoded x402 v2 payment requirements JSON",
-                "schema": { "type": "string" }
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -157,7 +206,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -170,7 +221,56 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded. Retry after the X-RateLimit-Reset timestamp.",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests allowed per hour",
+                "schema": {
+                  "type": "integer",
+                  "example": 1000
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in current window",
+                "schema": {
+                  "type": "integer",
+                  "example": 999
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Unix timestamp when the rate limit resets",
+                "schema": {
+                  "type": "integer",
+                  "example": 1778113668
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Rate limit exceeded"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "RATE_LIMIT_EXCEEDED"
+                    },
+                    "retryAfter": {
+                      "type": "integer",
+                      "description": "Seconds until retry is allowed"
+                    }
                   }
                 }
               }

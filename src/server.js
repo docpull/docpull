@@ -224,6 +224,11 @@ app.use(express.static(publicDir));
 
 // ── /docs redirect + well-known openapi ───────────────────────────────────
 app.get("/docs", (_req, res) => res.sendFile("docs/llms.txt", { root: publicDir }));
+app.get("/developers", (_req, res) => res.sendFile("developers.html", { root: publicDir }));
+app.get("/.well-known/http-message-signatures-directory", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.sendFile(".well-known/http-message-signatures-directory", { root: publicDir });
+});
 app.get("/.well-known/openapi.json", (_req, res) => res.sendFile("openapi.json", { root: publicDir }));
 app.get("/developers", (_req, res) => res.sendFile("docs/llms.txt", { root: publicDir }));
 

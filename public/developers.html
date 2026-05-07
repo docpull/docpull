@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Docs — docpull</title>
+  <meta name="description" content="docpull API documentation. PDF to Markdown extraction for AI agents. x402 v2 payments, OpenAPI spec, code examples.">
+  <link rel="canonical" href="https://docpull.ai/developers">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--ink:#0d0d0d;--paper:#f7f5f0;--cream:#edeae3;--rule:#d8d4cb;--green:#2d6a4f;--green-light:#e8f5ee;--mono:'DM Mono',monospace;--sans:'Geist',sans-serif}
+    body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.7}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2.5rem;border-bottom:1px solid var(--rule)}
+    .nav-logo{font-family:var(--mono);font-size:1rem;font-weight:500;color:var(--ink);text-decoration:none}
+    .nav-back{font-size:0.85rem;color:#777;text-decoration:none}
+    .layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+    .sidebar{padding:2rem 1.5rem;border-right:1px solid var(--rule);position:sticky;top:0;height:100vh;overflow-y:auto}
+    .sidebar-section{margin-bottom:2rem}
+    .sidebar-label{font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;margin-bottom:0.75rem}
+    .sidebar a{display:block;font-size:0.85rem;color:#666;text-decoration:none;padding:0.25rem 0;border-left:2px solid transparent;padding-left:0.75rem}
+    .sidebar a:hover,.sidebar a.active{color:var(--green);border-left-color:var(--green)}
+    .content{padding:3rem 4rem 6rem;max-width:760px}
+    h1{font-size:1.8rem;font-weight:500;margin-bottom:0.5rem}
+    h2{font-size:1.2rem;font-weight:500;margin:2.5rem 0 0.75rem;padding-top:2.5rem;border-top:1px solid var(--rule)}
+    h2:first-of-type{margin-top:2rem;border-top:none}
+    h3{font-size:0.95rem;font-weight:500;margin:1.5rem 0 0.5rem;color:#333}
+    p{margin-bottom:1rem;font-size:0.95rem}
+    ul{margin:0 0 1rem 1.5rem}
+    li{margin-bottom:0.35rem;font-size:0.95rem}
+    pre{background:#0d0d0d;border-radius:6px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+    code{font-family:var(--mono);font-size:0.8rem;line-height:1.7;color:#e8e8e8}
+    p code,li code{background:var(--cream);color:var(--ink);padding:0.1rem 0.35rem;border-radius:3px;font-size:0.82em}
+    .endpoint{border:1px solid var(--rule);border-radius:6px;padding:1.25rem;margin:1rem 0}
+    .endpoint-method{font-family:var(--mono);font-size:0.7rem;background:var(--green);color:white;padding:0.2rem 0.5rem;border-radius:3px;margin-right:0.5rem}
+    .endpoint-path{font-family:var(--mono);font-size:0.9rem}
+    .badge{display:inline-block;font-family:var(--mono);font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:3px;margin-left:0.5rem}
+    .badge.free{background:var(--green-light);color:var(--green)}
+    .badge.paid{background:#fff3e0;color:#c97d00}
+    .callout{background:var(--green-light);border-left:3px solid var(--green);padding:0.85rem 1rem;border-radius:0 4px 4px 0;margin:1rem 0;font-size:0.9rem}
+    footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:0.75rem;color:#bbb;border-top:1px solid var(--rule)}
+    @media(max-width:700px){.layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">docpull</a>
+    <a href="/" class="nav-back">← docpull</a>
+  </nav>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <p class="sidebar-label">Getting started</p>
+        <a href="#overview">Overview</a>
+        <a href="#quickstart">Quickstart</a>
+        <a href="#authentication">Authentication</a>
+      </div>
+      <div class="sidebar-section">
+        <p class="sidebar-label">API reference</p>
+        <a href="#health">GET /health</a>
+        <a href="#probe">GET /probe</a>
+        <a href="#extract">POST /extract</a>
+        <a href="#status">GET /status</a>
+      </div>
+      <div class="sidebar-section">
+        <p class="sidebar-label">Guides</p>
+        <a href="#x402-guide">x402 payment flow</a>
+        <a href="#mcp-guide">MCP integration</a>
+        <a href="#errors">Error handling</a>
+        <a href="#rate-limits">Rate limits</a>
+      </div>
+      <div class="sidebar-section">
+        <p class="sidebar-label">Resources</p>
+        <a href="/openapi.json">OpenAPI spec</a>
+        <a href="/llms.txt">llms.txt</a>
+        <a href="/pricing">Pricing</a>
+        <a href="https://github.com/docpull/docpull">GitHub</a>
+      </div>
+    </aside>
+    <main class="content">
+      <h1>Developer Documentation</h1>
+      <p>docpull converts any publicly accessible PDF URL into clean structured Markdown. Pay $0.001 USDC per page via x402 v2 on Base mainnet — no accounts, no API keys, no subscriptions.</p>
+
+      <h2 id="overview">Overview</h2>
+      <p>Base URL: <code>https://docpull.ai</code></p>
+      <div class="endpoint">
+        <span class="endpoint-method">GET</span><span class="endpoint-path">/health</span><span class="badge free">free</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#666">Service health check</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method">GET</span><span class="endpoint-path">/probe?url=&lt;pdf_url&gt;</span><span class="badge free">free</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#666">Get page count and cost estimate before paying</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method">POST</span><span class="endpoint-path">/extract</span><span class="badge paid">x402 $0.001/page</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#666">Extract PDF to Markdown</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method">GET</span><span class="endpoint-path">/status</span><span class="badge free">free</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#666">Service status and uptime</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method">POST</span><span class="endpoint-path">/mcp</span><span class="badge free">MCP</span>
+        <p style="margin-top:0.5rem;font-size:0.85rem;color:#666">MCP Streamable HTTP endpoint</p>
+      </div>
+
+      <h2 id="quickstart">Quickstart</h2>
+      <h3>1. Check cost (free)</h3>
+      <pre><code>curl "https://docpull.ai/probe?url=https://example.com/doc.pdf"
+<span style="color:#6a9955">// { "pageCount": 5, "costUSDC": "0.005000", "pricePerPage": "0.001 USDC" }</span></code></pre>
+
+      <h3>2. Install x402 client</h3>
+      <pre><code>npm install @x402/fetch @x402/evm viem</code></pre>
+
+      <h3>3. Extract with automatic payment</h3>
+      <pre><code><span style="color:#7ec8e3">import</span> { x402Client, wrapFetchWithPayment } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/fetch"</span>;
+<span style="color:#7ec8e3">import</span> { ExactEvmScheme } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"@x402/evm/exact/client"</span>;
+<span style="color:#7ec8e3">import</span> { privateKeyToAccount } <span style="color:#7ec8e3">from</span> <span style="color:#ce9178">"viem/accounts"</span>;
+
+<span style="color:#7ec8e3">const</span> signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+<span style="color:#7ec8e3">const</span> client = <span style="color:#7ec8e3">new</span> x402Client().register(<span style="color:#ce9178">"eip155:*"</span>, <span style="color:#7ec8e3">new</span> ExactEvmScheme(signer));
+<span style="color:#7ec8e3">const</span> fetchWithPayment = wrapFetchWithPayment(fetch, client);
+
+<span style="color:#7ec8e3">const</span> res = <span style="color:#7ec8e3">await</span> fetchWithPayment(<span style="color:#ce9178">"https://docpull.ai/extract"</span>, {
+  method: <span style="color:#ce9178">"POST"</span>,
+  headers: { <span style="color:#ce9178">"Content-Type"</span>: <span style="color:#ce9178">"application/json"</span> },
+  body: JSON.stringify({ url: <span style="color:#ce9178">"https://example.com/doc.pdf"</span> }),
+});
+<span style="color:#7ec8e3">const</span> { markdown, pageCount } = <span style="color:#7ec8e3">await</span> res.json();</code></pre>
+
+      <h2 id="authentication">Authentication</h2>
+      <p>docpull uses the x402 v2 protocol instead of API keys. The <code>/health</code>, <code>/probe</code>, and <code>/status</code> endpoints are always free. The <code>/extract</code> endpoint requires a USDC payment on Base mainnet.</p>
+      <div class="callout">No account creation, no API key management, no subscriptions. Any agent with a funded Base wallet can call docpull immediately.</div>
+
+      <h2 id="x402-guide">x402 payment flow</h2>
+      <p>When you call <code>POST /extract</code> without a payment header:</p>
+      <ol style="margin:0 0 1rem 1.5rem">
+        <li>Server returns <code>402 Payment Required</code></li>
+        <li>Response includes <code>PAYMENT-REQUIRED</code> header (base64 JSON with payment instructions)</li>
+        <li>x402 client decodes requirements and signs USDC transfer on Base mainnet</li>
+        <li>CDP facilitator verifies and settles the payment</li>
+        <li>Client retries with <code>X-PAYMENT</code> header</li>
+        <li>Server returns the extracted Markdown</li>
+      </ol>
+      <p>Network: Base mainnet (<code>eip155:8453</code>) · Asset: USDC (<code>0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</code>)</p>
+
+      <h2 id="mcp-guide">MCP integration</h2>
+      <p>docpull exposes an MCP server at <code>https://docpull.ai/mcp</code> via Streamable HTTP transport.</p>
+      <pre><code>{
+  <span style="color:#f9a03f">"type"</span>: <span style="color:#ce9178">"streamable-http"</span>,
+  <span style="color:#f9a03f">"url"</span>: <span style="color:#ce9178">"https://docpull.ai/mcp"</span>
+}</code></pre>
+      <p>Available tools: <code>probe_pdf</code>, <code>extract_pdf</code>, <code>health_check</code></p>
+
+      <h2 id="errors">Error handling</h2>
+      <p>All errors return structured JSON with <code>error</code> and <code>code</code> fields:</p>
+      <pre><code>{ <span style="color:#f9a03f">"error"</span>: <span style="color:#ce9178">"url body field required"</span>, <span style="color:#f9a03f">"code"</span>: <span style="color:#ce9178">"MISSING_URL"</span> }</code></pre>
+      <p>Error codes: <code>MISSING_URL</code>, <code>PDF_FETCH_FAILED</code>, <code>NOT_FOUND</code>, <code>INTERNAL_ERROR</code>, <code>RATE_LIMIT_EXCEEDED</code></p>
+      <p>On <code>402</code>: decode the <code>PAYMENT-REQUIRED</code> header and send payment via an x402-compatible client.</p>
+      <p>On <code>429</code>: check <code>X-RateLimit-Reset</code> header for retry timestamp. Use exponential backoff starting at 1 second.</p>
+
+      <h2 id="rate-limits">Rate limits</h2>
+      <p>1000 requests per hour. Rate limit headers are included on every response:</p>
+      <ul>
+        <li><code>X-RateLimit-Limit</code> — requests allowed per hour</li>
+        <li><code>X-RateLimit-Remaining</code> — requests remaining in current window</li>
+        <li><code>X-RateLimit-Reset</code> — Unix timestamp when limit resets</li>
+      </ul>
+    </main>
+  </div>
+  <footer><a href="/">docpull.ai</a> · PDF to Markdown API for AI agents</footer>
+</body>
+</html>
